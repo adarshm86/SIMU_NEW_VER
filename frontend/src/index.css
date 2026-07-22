@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: radial-gradient(ellipse at top, #0e1728 0%, #060a12 65%);
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(212, 175, 55, 0.35);
+}
+
+/* Thin gold scrollbar to match the lab-instrument aesthetic */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b1220;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#b8860b, #d4af37);
+  border-radius: 8px;
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-frost backdrop-blur-xl border border-white/10 rounded-2xl shadow-glass;
+  }
+
+  .glass-pill {
+    @apply bg-frost backdrop-blur-xl border border-white/10 rounded-full shadow-glass;
+  }
+
+  .btn-gold {
+    @apply px-6 py-3 rounded-full font-body font-semibold text-navy bg-gradient-to-r from-gold-500 to-gold-400 hover:shadow-gold transition-shadow duration-300;
+  }
+
+  .btn-outline {
+    @apply px-6 py-3 rounded-full font-body font-semibold text-medical-white border border-gold-500/50 hover:bg-gold-500/10 transition-colors duration-300;
+  }
+
+  .section-eyebrow {
+    @apply font-data text-xs tracking-[0.35em] uppercase text-cyan-soft/80;
+  }
+
+  .title-serif {
+    @apply font-display tracking-wide;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
