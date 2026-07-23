@@ -10,7 +10,8 @@ import {
 const SimulationContext = createContext(null);
 
 const DEFAULT_CONFIG = {
-  species: "ecoli",
+  species: "",
+  antibiotic: "",
   grid_size: 40,
   initial_population: 120,
   mutation_rate: 0.05,
@@ -76,6 +77,7 @@ export function SimulationProvider({ children }) {
   const reset = useCallback(async () => {
     pause();
     if (experimentId) await resetExperiment(experimentId);
+    setConfig(DEFAULT_CONFIG);
     setExperimentId(null);
     setState(null);
     setHistory([]);
