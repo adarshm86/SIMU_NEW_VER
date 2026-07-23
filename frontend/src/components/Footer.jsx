@@ -16,8 +16,8 @@ export default function Footer() {
             PROJECT
           </h4>
           <ul className="space-y-2 text-sm text-medical-white/60 font-body">
-            <li>Final Year Major Project</li>
-            <li>Department of Biotechnology / CSE</li>
+            <li>2026</li>
+            <li>Department of ISE</li>
             <li>Academic Year 2025–2026</li>
           </ul>
         </div>

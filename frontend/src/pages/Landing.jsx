@@ -39,7 +39,7 @@ function useAutoCarousel(length, interval = 3500) {
   return index;
 }
 
-function useAutoStage(length, interval = 1400) {
+function useAutoStage(length, interval = 1600) {
   const [stage, setStage] = useState(0);
   useEffect(() => {
     const id = setInterval(() => setStage((s) => (s + 1) % length), interval);
@@ -47,6 +47,84 @@ function useAutoStage(length, interval = 1400) {
   }, [length, interval]);
   return stage;
 }
+
+/* Custom Components for the U-Shape Flow */
+const StageCard = ({ stage, index, active }) => (
+  <motion.div
+    animate={{
+      borderColor: active ? "rgba(110, 231, 183, 0.5)" : "rgba(255, 255, 255, 0.05)",
+      backgroundColor: active ? "rgba(110, 231, 183, 0.08)" : "rgba(255, 255, 255, 0.02)",
+      scale: active ? 1.05 : 1,
+      boxShadow: active ? "0 10px 30px -10px rgba(110, 231, 183, 0.3)" : "none"
+    }}
+    transition={{ duration: 0.5 }}
+    className="rounded-3xl p-4 md:p-6 flex flex-col items-center justify-center text-center gap-2 border backdrop-blur-sm h-full"
+  >
+    <span
+      className={`text-xs md:text-sm font-bold tracking-widest ${
+        active ? "text-earth-300" : "text-white/30"
+      }`}
+    >
+      {String(index + 1).padStart(2, "0")}
+    </span>
+    <p
+      className={`font-bold text-xs md:text-sm ${
+        active ? "text-white" : "text-white/50"
+      }`}
+    >
+      {stage}
+    </p>
+  </motion.div>
+);
+
+const EvolutionPathArrow = ({ type, active, past }) => {
+  const isLit = active || past;
+  const color = isLit ? "bg-emerald-400" : "bg-white/10";
+  const borderColor = isLit ? "border-emerald-400" : "border-white/10";
+  const glow = "shadow-[0_0_12px_#34d399]";
+
+  if (type === "down") {
+    return (
+      <div className="flex flex-col items-center justify-center h-12 md:h-16">
+        <div className={`w-1 h-full rounded-full relative overflow-hidden ${isLit ? 'bg-emerald-900/40' : 'bg-white/5'}`}>
+          {active && (
+            <motion.div initial={{ y: "-100%" }} animate={{ y: "100%" }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} className={`absolute inset-0 bg-emerald-300 ${glow}`} />
+          )}
+          {past && <div className={`absolute inset-0 bg-emerald-400 ${glow}`} />}
+        </div>
+        <div className={`w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] ${borderColor} mt-1 transition-colors duration-300`} />
+      </div>
+    );
+  }
+  
+  if (type === "up") {
+    return (
+      <div className="flex flex-col items-center justify-center h-12 md:h-16">
+        <div className={`w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[8px] ${borderColor} mb-1 transition-colors duration-300`} />
+        <div className={`w-1 h-full rounded-full relative overflow-hidden ${isLit ? 'bg-emerald-900/40' : 'bg-white/5'}`}>
+          {active && (
+            <motion.div initial={{ y: "100%" }} animate={{ y: "-100%" }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} className={`absolute inset-0 bg-emerald-300 ${glow}`} />
+          )}
+          {past && <div className={`absolute inset-0 bg-emerald-400 ${glow}`} />}
+        </div>
+      </div>
+    );
+  }
+  
+  if (type === "right") {
+    return (
+      <div className="flex flex-row items-center justify-center w-full px-2 md:px-6">
+        <div className={`h-1 w-full rounded-full relative overflow-hidden ${isLit ? 'bg-emerald-900/40' : 'bg-white/5'}`}>
+          {active && (
+            <motion.div initial={{ x: "-100%" }} animate={{ x: "100%" }} transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }} className={`absolute inset-0 bg-emerald-300 ${glow}`} />
+          )}
+          {past && <div className={`absolute inset-0 bg-emerald-400 ${glow}`} />}
+        </div>
+        <div className={`w-0 h-0 border-t-[6px] border-t-transparent border-b-[6px] border-b-transparent border-l-[8px] ${borderColor} ml-1 transition-colors duration-300`} />
+      </div>
+    );
+  }
+};
 
 export default function Landing() {
   const carouselIndex = useAutoCarousel(LAB_IMAGES.length);
@@ -143,6 +221,72 @@ export default function Landing() {
         </motion.div>
       </section>
 
+      {/* NEW: LIVE RESISTANCE HEATMAP DASHBOARD */}
+      <section className="max-w-6xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 px-4">
+          <div>
+            <h3 className="text-4xl font-black text-white mb-1">48,204</h3>
+            <p className="text-xs font-bold tracking-widest text-earth-300 uppercase">Generations Simulated</p>
+          </div>
+          <div>
+            <h3 className="text-4xl font-black text-white mb-1">2</h3>
+            <p className="text-xs font-bold tracking-widest text-earth-300 uppercase">Clinical Scenarios</p>
+          </div>
+          <div>
+            <h3 className="text-4xl font-black text-white mb-1">92%</h3>
+            <p className="text-xs font-bold tracking-widest text-earth-300 uppercase">Peak Hotspot Accuracy</p>
+          </div>
+          <div>
+            <h3 className="text-4xl font-black text-white mb-1">576</h3>
+            <p className="text-xs font-bold tracking-widest text-earth-300 uppercase">Grid Cells Tracked</p>
+          </div>
+        </div>
+
+        <div className="relative rounded-[2rem] border border-emerald-500/20 bg-emerald-900/10 backdrop-blur-xl p-6 shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3">
+              <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+              <span className="text-sm font-bold tracking-widest text-white/90 uppercase">
+                Live Resistance Heatmap · MRSA Hospital Surface
+              </span>
+            </div>
+            <span className="text-xs font-mono tracking-widest text-emerald-300/80">
+              GEN {String(activeStage * 12 + 84).padStart(3, '0')} / 120
+            </span>
+          </div>
+
+          {/* Animated Grid */}
+          <div 
+            className="grid gap-1.5 sm:gap-2" 
+            style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(32px, 1fr))' }}
+          >
+            {Array.from({ length: 96 }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                animate={{ 
+                  opacity: 1,
+                  backgroundColor: [
+                    "rgba(16, 185, 129, 0.1)",  // Dark/Empty
+                    "rgba(16, 185, 129, 0.3)",  // Emerging
+                    "rgba(16, 185, 129, 0.6)",  // Resistant
+                    "rgba(16, 185, 129, 0.1)"   // Die-off / Cleared
+                  ]
+                }}
+                transition={{
+                  duration: Math.random() * 4 + 3,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                  ease: "easeInOut"
+                }}
+                className="aspect-square rounded-sm shadow-inner"
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* SECTION 2: Explanation + Carousel */}
       <section className="max-w-6xl mx-auto px-6 py-28 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
         <div className="pr-4">
@@ -190,9 +334,8 @@ export default function Landing() {
         </div>
       </section>
 
-
-      {/* SECTION 3: Evolution Timeline */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      {/* SECTION 3: Evolution Timeline (U-Shape) */}
+      <section className="max-w-4xl mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <p className="text-earth-300 font-bold tracking-widest uppercase text-sm mb-4">The Mechanism</p>
           <h2 className="font-bold text-4xl md:text-5xl text-white">
@@ -200,43 +343,34 @@ export default function Landing() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {EVOLUTION_STAGES.map((stage, i) => {
-            const active = i === activeStage;
-            return (
-              <motion.div
-                key={stage}
-                animate={{
-                  borderColor: active ? "rgba(110, 231, 183, 0.4)" : "rgba(255, 255, 255, 0.05)",
-                  backgroundColor: active ? "rgba(110, 231, 183, 0.05)" : "rgba(255, 255, 255, 0.02)"
-                }}
-                transition={{ duration: 0.5 }}
-                className="rounded-3xl p-6 flex flex-col items-center text-center gap-3 border backdrop-blur-sm"
-              >
-                <span
-                  className={`text-sm font-bold tracking-widest ${
-                    active ? "text-earth-300" : "text-white/30"
-                  }`}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p
-                  className={`font-bold text-sm ${
-                    active ? "text-white" : "text-white/50"
-                  }`}
-                >
-                  {stage}
-                </p>
-                <div className="w-full h-1.5 bg-white/5 mt-2 overflow-hidden rounded-full">
-                  <motion.div
-                    className="h-full bg-emerald-300"
-                    animate={{ width: active ? "100%" : "0%" }}
-                    transition={{ duration: 1.2, ease: "easeInOut" }}
-                  />
-                </div>
-              </motion.div>
-            );
-          })}
+        {/* U-Shape Grid System */}
+        <div className="grid grid-cols-[1fr_40px_1fr] sm:grid-cols-[1fr_80px_1fr] md:grid-cols-[1fr_120px_1fr] items-center justify-center mx-auto">
+          
+          {/* Row 1: 1 (Left) and 6 (Right) */}
+          <StageCard stage={EVOLUTION_STAGES[0]} index={0} active={activeStage === 0} />
+          <div /> 
+          <StageCard stage={EVOLUTION_STAGES[5]} index={5} active={activeStage === 5} />
+
+          {/* Row 2: Flow Down and Flow Up */}
+          <EvolutionPathArrow type="down" active={activeStage === 0} past={activeStage > 0} />
+          <div />
+          <EvolutionPathArrow type="up" active={activeStage === 4} past={activeStage > 4} />
+
+          {/* Row 3: 2 (Left) and 5 (Right) */}
+          <StageCard stage={EVOLUTION_STAGES[1]} index={1} active={activeStage === 1} />
+          <div />
+          <StageCard stage={EVOLUTION_STAGES[4]} index={4} active={activeStage === 4} />
+
+          {/* Row 4: Flow Down and Flow Up */}
+          <EvolutionPathArrow type="down" active={activeStage === 1} past={activeStage > 1} />
+          <div />
+          <EvolutionPathArrow type="up" active={activeStage === 3} past={activeStage > 3} />
+
+          {/* Row 5: 3 (Left), Flow Right, and 4 (Right) */}
+          <StageCard stage={EVOLUTION_STAGES[2]} index={2} active={activeStage === 2} />
+          <EvolutionPathArrow type="right" active={activeStage === 2} past={activeStage > 2} />
+          <StageCard stage={EVOLUTION_STAGES[3]} index={3} active={activeStage === 3} />
+
         </div>
       </section>
 
