@@ -128,33 +128,104 @@ export default function Footer() {
             M
           </div>
         </div>
+<<<<<<< HEAD
 
-        <p className="font-data text-[11px] tracking-[0.35em] text-cyan-soft/70 mb-4">
-          THE COLONY CONTINUES TO EVOLVE
-        </p>
-
-        <h3 className="font-display text-3xl md:text-4xl mes-shimmer-text mb-5 leading-tight">
-          Resistance, Rendered in Real Time
-        </h3>
-
-        <p className="font-body text-sm text-medical-white/50 max-w-md mb-10">
-          Every mutation logged. Every generation observed. Step into the
-          laboratory and watch evolution decide who survives.
-        </p>
-
-        <a
-          href="#laboratory"
-          className="mes-btn-sweep relative overflow-hidden rounded-full bg-gradient-to-r from-gold-500 to-gold-400 text-navy-deep font-data text-xs tracking-[0.2em] px-10 py-4 transition-all duration-300 hover:shadow-[0_0_40px_rgba(242,165,65,0.55)] hover:-translate-y-1"
-        >
-          LAUNCH LABORATORY
-        </a>
-
-        <div className="flex items-center gap-4 mt-12 font-data text-[11px] tracking-[0.2em] text-medical-white/40">
-          <a href="#" className="hover:text-gold-500 transition-colors duration-300">GITHUB</a>
-          <span className="w-1 h-1 rounded-full bg-white/20" />
-          <a href="#" className="hover:text-gold-500 transition-colors duration-300">CONTACT</a>
-          <span className="w-1 h-1 rounded-full bg-white/20" />
-          <a href="#" className="hover:text-gold-500 transition-colors duration-300">LAB NOTES</a>
+        <div className="grid gap-10 text-left w-full mt-2 md:grid-cols-2 xl:grid-cols-4">
+          <div className="md:col-span-2 xl:col-span-1">
+            <h3 className="font-display text-gold-500 text-lg tracking-wide mb-3">
+              M.E.S.
+            </h3>
+            <p className="font-body text-sm text-medical-white/60 leading-relaxed max-w-md">
+              Microbial Evolution Simulator — a research platform for modeling
+              antibiotic resistance dynamics.
+            </p>
+            <p className="font-data text-[11px] tracking-[0.35em] text-cyan-soft/70 mt-8 mb-4">
+              THE COLONY CONTINUES TO EVOLVE
+            </p>
+            <h3 className="font-display text-3xl md:text-4xl mes-shimmer-text mb-5 leading-tight">
+              Resistance, Rendered in Real Time
+            </h3>
+            <p className="font-body text-sm text-medical-white/50 max-w-md mb-8">
+              Every mutation logged. Every generation observed. Step into the
+              laboratory and watch evolution decide who survives.
+            </p>
+            <a
+              href="#laboratory"
+              className="mes-btn-sweep relative inline-flex overflow-hidden rounded-full bg-gradient-to-r from-gold-500 to-gold-400 text-navy-deep font-data text-xs tracking-[0.2em] px-10 py-4 transition-all duration-300 hover:shadow-[0_0_40px_rgba(242,165,65,0.55)] hover:-translate-y-1"
+            >
+              LAUNCH LABORATORY
+            </a>
+            <div className="flex flex-wrap items-center gap-4 mt-10 font-data text-[11px] tracking-[0.2em] text-medical-white/40">
+              <a href="#" className="hover:text-gold-500 transition-colors duration-300">
+                GITHUB
+              </a>
+              <span className="w-1 h-1 rounded-full bg-white/20" />
+              <a href="#" className="hover:text-gold-500 transition-colors duration-300">
+                CONTACT
+              </a>
+              <span className="w-1 h-1 rounded-full bg-white/20" />
+              <a href="#" className="hover:text-gold-500 transition-colors duration-300">
+                LAB NOTES
+              </a>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
+              PROJECT
+            </h4>
+            <ul className="space-y-2 text-sm text-medical-white/60 font-body">
+              <li>2026</li>
+              <li>Department of ISE</li>
+              <li>Academic Year 2025-2026</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
+              INSTITUTION
+            </h4>
+            <ul className="space-y-2 text-sm text-medical-white/60 font-body">
+              <li>Your College / University Name</li>
+              <li>School of Engineering</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
+              CONNECT
+            </h4>
+            <ul className="space-y-2 text-sm text-medical-white/60 font-body">
+              <li>github.com/your-repo-placeholder</li>
+              <li>contact@your-email-placeholder.edu</li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
+            PROJECT
+          </h4>
+          <ul className="space-y-2 text-sm text-medical-white/60 font-body">
+            <li>2026</li>
+            <li>Department of ISE</li>
+            <li>Academic Year 2025–2026</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
+            INSTITUTION
+          </h4>
+          <ul className="space-y-2 text-sm text-medical-white/60 font-body">
+            <li>Your College / University Name</li>
+            <li>School of Engineering</li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
+            CONNECT
+          </h4>
+          <ul className="space-y-2 text-sm text-medical-white/60 font-body">
+            <li>github.com/your-repo-placeholder</li>
+            <li>contact@your-email-placeholder.edu</li>
+          </ul>
+>>>>>>> fed1b6f4b31c63bd7c9caa0618d6ee63ce0a72b3
         </div>
       </div>
 
