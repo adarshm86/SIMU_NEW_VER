@@ -35,10 +35,10 @@ export default function Navbar() {
         {/* Project Title */}
         <Link
           to="/"
-          className="flex items-center gap-3 text-earth-300 hover:text-earth-300 transition-colors"
+          className="flex items-center gap-3 text-[#FFAb0F] hover:text-earth-300 transition-colors"
         >
          
-          <span className="font-extrabold text-base sm:text-lg tracking-wide uppercase font-[stardom]">
+          <span className="font-bold text-base sm:text-lg tracking-wide uppercase font-[stardom]">
             Microbial Evolution Simulator
           </span>
         </Link>
@@ -54,7 +54,7 @@ export default function Navbar() {
                 /* Fully rounded inner pills */
                 className={`relative px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   active 
-                    ? "text-emerald-100 bg-[#74421f'] border border-emerald-400/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]" 
+                    ? "text-emerald-100 bg-[#74421f'] border border[#FFAB0F] shadow-[0_0_15px_rgba(16,185,129,0.2)]" 
                     : "text-stone-300 hover:text-white hover:bg-white/10 border border-transparent"
                 }`}
               >

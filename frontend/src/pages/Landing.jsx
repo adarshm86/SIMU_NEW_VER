@@ -95,7 +95,7 @@ export default function Landing() {
           >
             Microbial Evolution
             <br />
-            <span className="text-[#FF0000]">
+            <span className="text-[#e69b00]">
               Under Antibiotic Stress
             </span>
           </motion.h1>
@@ -150,21 +150,26 @@ export default function Landing() {
           <h2 className="font-bold text-4xl md:text-5xl text-white mb-8 leading-tight">
             Why Antibiotic Resistance Matters
           </h2>
-          <p className="text-white/70 leading-relaxed mb-5 font-medium text-lg">
-            Antibiotic resistance is one of the most pressing challenges in
-            modern medicine. As bacterial populations reproduce under
-            selective pressure, random mutations that confer survival
-            advantages spread rapidly — sometimes within a matter of days.
+          
+          <p className="text-white/75 leading-relaxed mb-6 font-medium text-lg text-justify">
+            {/* BIG DROP CAP */}
+            <span className="float-left text-[4.5rem] font-black text-earth-300 mr-4 mt-1 leading-none drop-shadow-lg">
+              A
+            </span>
+            ntibiotic resistance is one of the most pressing challenges in
+            modern medicine. As bacterial populations reproduce under <span className="italic text-[#FFAB0F]">selective pressure</span>, <span className="italic text-[#FFAb0F]">random mutations</span> that confer survival
+            advantages spread rapidly  sometimes within a matter of days.
           </p>
-          <p className="text-white/70 leading-relaxed mb-5 font-medium text-lg">
-            Understanding this process at a mechanistic level — reproduction,
-            mutation, and selection acting together on a spatial grid — is
+          
+          <p className="text-white/75 leading-relaxed mb-6 font-medium text-lg text-justify">
+            Understanding this process at a mechanistic level reproduction,
+            mutation, and selection acting together on a <span className="italic text-[#FFAB0F]">spatial grid</span> is
             essential for designing better dosing strategies and predicting
             outbreaks of resistant strains.
           </p>
-          <p className="text-white/70 leading-relaxed font-medium text-lg">
-            This platform simulates that process directly, then layers a
-            machine-learning model on top to forecast where resistance is
+          
+          <p className="text-white/75 leading-relaxed font-medium text-lg text-justify">
+            This platform simulates that process directly, then layers a <span className="italic text-[#FFAb0F]">machine-learning model</span> on top to forecast where resistance is
             heading before it dominates the population.
           </p>
         </div>
@@ -184,6 +189,7 @@ export default function Landing() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d0c] via-black/20 to-transparent" />
         </div>
       </section>
+
 
       {/* SECTION 3: Evolution Timeline */}
       <section className="max-w-7xl mx-auto px-6 py-20">
