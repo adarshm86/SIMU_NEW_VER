@@ -44,6 +44,8 @@ export default function Dashboard() {
                 cells={state?.cells || []}
                 antibioticField={state?.antibiotic_field || []}
                 gridSize={state?.grid_size || 40}
+                generation={state?.stats?.generation ?? 0}
+                species={state?.species || "ecoli"}
               />
               <div className="absolute top-4 left-4 text-xs font-data text-medical-white/50 bg-navy-deep/60 px-3 py-1 rounded-full border border-white/10">
                 Generation {state?.stats?.generation ?? 0}
