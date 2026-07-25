@@ -1,24 +1,21 @@
 import { useEffect, useState } from "react";
 
-function FloatingSpores() {
-  const spores = Array.from({ length: 14 });
+function FloatingParticles() {
+  const particles = Array.from({ length: 8 });
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {spores.map((_, i) => {
-        const left = (i * 137.5) % 100; // golden-angle spread
-        const delay = (i * 1.7) % 12;
-        const duration = 10 + (i % 5) * 2.5;
-        const size = 2 + (i % 3);
+    <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-40">
+      {particles.map((_, i) => {
+        const left = (i * 23.7) % 100;
+        const delay = (i * 1.5) % 8;
+        const duration = 12 + (i % 4) * 3;
         return (
           <span
             key={i}
-            className="absolute rounded-full bg-gold-500/40"
+            className="absolute h-1 w-1 rounded-full bg-[#F2A541]/60 blur-[0.5px]"
             style={{
               left: `${left}%`,
               bottom: "-10px",
-              width: size,
-              height: size,
-              animation: `mesRise ${duration}s linear ${delay}s infinite`,
+              animation: `bioRise ${duration}s ease-in-out ${delay}s infinite`,
             }}
           />
         );
@@ -31,199 +28,111 @@ export default function Footer() {
   const [gen, setGen] = useState(1284);
 
   useEffect(() => {
-    const id = setInterval(() => setGen((g) => g + 1), 2600);
+    const id = setInterval(() => setGen((g) => g + 1), 2800);
     return () => clearInterval(id);
   }, []);
 
   return (
-    <footer className="relative mt-24 overflow-hidden bg-navy-deep">
+    <footer className="relative w-full overflow-hidden bg-[#07090e] pt-16 pb-8 text-[#e2e8f0] font-sans border-t border-white/5">
       <style>{`
-        @keyframes mesRise {
-          0%   { transform: translateY(0) translateX(0); opacity: 0; }
-          10%  { opacity: 1; }
-          90%  { opacity: 0.6; }
-          100% { transform: translateY(-420px) translateX(24px); opacity: 0; }
+        @keyframes bioRise {
+          0% { transform: translateY(0) scale(0.8); opacity: 0; }
+          20% { opacity: 0.8; }
+          80% { opacity: 0.4; }
+          100% { transform: translateY(-300px) scale(1.4); opacity: 0; }
         }
-        @keyframes mesShimmer {
-          0%   { background-position: 0% 50%; }
-          100% { background-position: 200% 50%; }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.25; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.08); }
         }
-        @keyframes mesRotateSlow {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes mesRotateSlowRev {
-          from { transform: rotate(360deg); }
-          to   { transform: rotate(0deg); }
-        }
-        @keyframes mesSweep {
-          0%   { transform: translateX(-120%); }
-          100% { transform: translateX(220%); }
-        }
-        @keyframes mesMarquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes mesPulseGlow {
-          0%, 100% { opacity: 0.35; transform: scale(1); }
-          50%      { opacity: 0.65; transform: scale(1.08); }
-        }
-        .mes-shimmer-text {
-          background: linear-gradient(90deg, #F2A541 0%, #FDE68A 25%, #F2A541 50%, #FDE68A 75%, #F2A541 100%);
-          background-size: 200% auto;
+        .royal-gradient-text {
+          background: linear-gradient(135deg, #FFF 0%, #F2A541 50%, #D4AF37 100%);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          animation: mesShimmer 5s linear infinite;
-        }
-        .mes-btn-sweep::before {
-          content: "";
-          position: absolute;
-          top: 0; left: 0;
-          width: 40%;
-          height: 100%;
-          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.55), transparent);
-          transform: translateX(-120%);
-        }
-        .mes-btn-sweep:hover::before {
-          animation: mesSweep 1s ease forwards;
         }
       `}</style>
 
-      {/* ambient glow orbs */}
-      <div
-        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[380px] rounded-full bg-gold-500/10 blur-[110px]"
-        style={{ animation: "mesPulseGlow 6s ease-in-out infinite" }}
+      {/* Ambient Subtle Background Glows */}
+      <div 
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[250px] rounded-full bg-[#F2A541]/10 blur-[130px]"
+        style={{ animation: "pulseGlow 8s ease-in-out infinite" }}
       />
-      <div
-        className="pointer-events-none absolute bottom-0 right-10 w-[380px] h-[260px] rounded-full bg-cyan-soft/10 blur-[100px]"
-        style={{ animation: "mesPulseGlow 7s ease-in-out infinite 1s" }}
-      />
-      <FloatingSpores />
+      <FloatingParticles />
 
-      {/* top hairline with traveling glow */}
-      <div className="relative h-px w-full bg-white/10 overflow-hidden">
-        <div
-          className="absolute inset-y-0 w-40 bg-gradient-to-r from-transparent via-gold-500 to-transparent"
-          style={{ animation: "mesSweep 3.5s linear infinite" }}
-        />
-      </div>
+      <div className="relative max-w-6xl mx-auto px-6">
+        {/* Top Hero-Style Floating Container */}
+        <div className="relative rounded-2xl bg-gradient-to-b from-white/[0.05] to-white/[0.01] border border-white/10 p-8 md:p-12 backdrop-blur-xl mb-12 shadow-2xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            
+            {/* Left: Brand Identity & Active Live Indicator */}
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-[#F2A541]/10 border border-[#F2A541]/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F2A541] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F2A541]"></span>
+                </span>
+                <span className="font-mono text-[10px] tracking-[0.25em] text-[#F2A541] uppercase font-semibold">
+                  Generation {gen.toLocaleString()} Active
+                </span>
+              </div>
 
-      <div className="relative max-w-4xl mx-auto px-6 pt-20 pb-10 flex flex-col items-center text-center">
-        {/* rotating emblem */}
-        <div className="relative w-20 h-20 mb-10">
-          <div
-            className="absolute inset-0 rounded-full border border-gold-500/40"
-            style={{ animation: "mesRotateSlow 14s linear infinite" }}
-          >
-            <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gold-500 shadow-[0_0_10px_3px_rgba(242,165,65,0.6)]" />
-          </div>
-          <div
-            className="absolute inset-3 rounded-full border border-cyan-soft/30"
-            style={{ animation: "mesRotateSlowRev 9s linear infinite" }}
-          >
-            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-cyan-soft shadow-[0_0_8px_2px_rgba(94,234,212,0.6)]" />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center font-display text-gold-500 text-lg tracking-widest">
-            M
-          </div>
-        </div>
+              <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white">
+                Microbial Evolution <span className="royal-gradient-text font-normal">Simulator</span>
+              </h2>
 
-        <div className="grid gap-10 text-left w-full mt-2 md:grid-cols-2 xl:grid-cols-4">
-          <div className="md:col-span-2 xl:col-span-1">
-            <h3 className="font-display text-gold-500 text-lg tracking-wide mb-3">
-              M.E.S.
-            </h3>
-            <p className="font-body text-sm text-medical-white/60 leading-relaxed max-w-md">
-              Microbial Evolution Simulator — a research platform for modeling
-              antibiotic resistance dynamics.
-            </p>
-            <p className="font-data text-[11px] tracking-[0.35em] text-cyan-soft/70 mt-8 mb-4">
-              THE COLONY CONTINUES TO EVOLVE
-            </p>
-            <h3 className="font-display text-3xl md:text-4xl mes-shimmer-text mb-5 leading-tight">
-              Resistance, Rendered in Real Time
-            </h3>
-            <p className="font-body text-sm text-medical-white/50 max-w-md mb-8">
-              Every mutation logged. Every generation observed. Step into the
-              laboratory and watch evolution decide who survives.
-            </p>
-            <a
-              href="#laboratory"
-              className="mes-btn-sweep relative inline-flex overflow-hidden rounded-full bg-gradient-to-r from-gold-500 to-gold-400 text-navy-deep font-data text-xs tracking-[0.2em] px-10 py-4 transition-all duration-300 hover:shadow-[0_0_40px_rgba(242,165,65,0.55)] hover:-translate-y-1"
-            >
-              LAUNCH LABORATORY
-            </a>
-            <div className="flex flex-wrap items-center gap-4 mt-10 font-data text-[11px] tracking-[0.2em] text-medical-white/40">
-              <a href="#" className="hover:text-gold-500 transition-colors duration-300">
-                GITHUB
-              </a>
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              <a href="#" className="hover:text-gold-500 transition-colors duration-300">
-                CONTACT
-              </a>
-              <span className="w-1 h-1 rounded-full bg-white/20" />
-              <a href="#" className="hover:text-gold-500 transition-colors duration-300">
-                LAB NOTES
+              <p className="text-xs text-slate-400 max-w-lg leading-relaxed font-light">
+                Modeling spatiotemporal bacterial adaptation and resistance dynamics under selective antibiotic pressure.
+              </p>
+            </div>
+
+            {/* Right: Modern Action CTA */}
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              <a
+                href="#laboratory"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-[#F2A541] to-[#d48c28] px-8 py-3.5 text-xs font-semibold tracking-widest text-[#07090e] transition-all duration-300 hover:shadow-[0_0_30px_rgba(242,165,65,0.4)] hover:scale-[1.02]"
+              >
+                <span className="relative z-10 uppercase tracking-[0.2em]">Launch Laboratory</span>
               </a>
             </div>
           </div>
-          <div>
-            <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
-              PROJECT
-            </h4>
-            <ul className="space-y-2 text-sm text-medical-white/60 font-body">
-              <li>2026</li>
-              <li>Department of ISE</li>
-              <li>Academic Year 2025-2026</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
-              INSTITUTION
-            </h4>
-            <ul className="space-y-2 text-sm text-medical-white/60 font-body">
-              <li>Your College / University Name</li>
-              <li>School of Engineering</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-data text-xs tracking-[0.25em] text-cyan-soft/80 mb-4">
-              CONNECT
-            </h4>
-            <ul className="space-y-2 text-sm text-medical-white/60 font-body">
-              <li>github.com/your-repo-placeholder</li>
-              <li>contact@your-email-placeholder.edu</li>
-            </ul>
+
+          {/* Minimal Divider */}
+          <div className="my-8 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+          {/* Key Metadata Stats Line */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-left">
+            <div>
+              <p className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Focus Strains</p>
+              <p className="text-sm font-medium text-slate-200 mt-1">MRSA & E. coli</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Architecture</p>
+              <p className="text-sm font-medium text-slate-200 mt-1">Agent-Based Grid</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Department</p>
+              <p className="text-sm font-medium text-slate-200 mt-1">Information Science & Eng.</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">Academic Session</p>
+              <p className="text-sm font-medium text-slate-200 mt-1">2025 – 2026</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* infinite marquee ticker */}
-      <div className="relative border-y border-white/10 py-3 overflow-hidden bg-white/[0.02]">
-        <div
-          className="flex whitespace-nowrap font-data text-[11px] tracking-[0.3em] text-medical-white/30"
-          style={{ animation: "mesMarquee 22s linear infinite", width: "200%" }}
-        >
-          {Array.from({ length: 2 }).map((_, row) => (
-            <span key={row} className="flex shrink-0 w-1/2 justify-around">
-              <span>GENOME SEQUENCED</span>
-              <span className="text-gold-500/50">◆</span>
-              <span>MUTATION LOGGED</span>
-              <span className="text-cyan-soft/50">◆</span>
-              <span>RESISTANCE TRACKED</span>
-              <span className="text-gold-500/50">◆</span>
-              <span>GENERATION {gen.toLocaleString()}</span>
-              <span className="text-cyan-soft/50">◆</span>
-            </span>
-          ))}
+        {/* Bottom Bar: Copyright & Clean Minimal Links */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-light pt-2">
+          <p>© {new Date().getFullYear()} Microbial Evolution Simulator. All rights reserved.</p>
+          
+          <div className="flex items-center gap-6 font-mono text-[11px] text-slate-400">
+            <a href="#about" className="hover:text-[#F2A541] transition-colors">Documentation</a>
+            <span className="text-slate-800">•</span>
+            <a href="#research" className="hover:text-[#F2A541] transition-colors">Research Paper</a>
+            <span className="text-slate-800">•</span>
+            <a href="#github" className="hover:text-[#F2A541] transition-colors">GitHub</a>
+          </div>
         </div>
-      </div>
-
-      <div className="relative max-w-4xl mx-auto px-6 py-6 flex items-center justify-center">
-        <p className="font-data text-[11px] tracking-wide text-medical-white/30">
-          © {new Date().getFullYear()} Microbial Evolution Simulator — Research use only
-        </p>
       </div>
     </footer>
   );
