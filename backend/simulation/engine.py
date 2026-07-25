@@ -193,12 +193,18 @@ class SimulationEngine:
         """Lightweight cell list for the Three.js renderer."""
         return [
             {
+                "id": idx + 1,
                 "x": c.x,
                 "y": c.y,
                 "r": round(c.resistance, 3),
                 "cls": classify(c.resistance),
+                "alive": True,
+                "generation_born": self.generation,
+                "mutation_count": 0,
+                "growth_rate": round(self.growth_rate, 3),
+                "parent_id": None,
             }
-            for c in self.cells
+            for idx, c in enumerate(self.cells)
         ]
 
     def get_antibiotic_field_payload(self, downsample=1):
