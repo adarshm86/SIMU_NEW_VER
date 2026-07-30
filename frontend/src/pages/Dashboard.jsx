@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import ControlPanel from "../components/ControlPanel.jsx";
 import StatPanel from "../components/StatPanel.jsx";
@@ -6,9 +7,36 @@ import ChartsPanel from "../components/ChartsPanel.jsx";
 import MLPanel from "../components/MLPanel.jsx";
 import Timeline from "../components/Timeline.jsx";
 import { useSimulation } from "../context/SimulationContext.jsx";
+import generateLaboratoryReport from "../utils/reportGenerator.js";
 
 export default function Dashboard() {
-  const { state, experimentId } = useSimulation();
+  const chartRef = useRef(null);
+  const snapshotRef = useRef(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const { state, experimentId, history, config } = useSimulation();
+
+  const handleDownloadReport = async () => {
+    if (!state || !chartRef.current || !snapshotRef.current) {
+      window.alert("Report is not ready yet. Please make sure the simulation dashboard is fully loaded.");
+      return;
+    }
+    setReportLoading(true);
+    try {
+      await generateLaboratoryReport({
+        config,
+        state: state.stats ? state.stats : state,
+        history,
+        chartElement: chartRef.current,
+        snapshotElement: snapshotRef.current,
+        deployedUrl: window.location.origin,
+      });
+    } catch (error) {
+      console.error("Report generation failed:", error);
+      window.alert(`Unable to generate PDF report. ${error?.message ?? "Please try again."}`);
+    } finally {
+      setReportLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -39,7 +67,7 @@ export default function Dashboard() {
 
         {experimentId && (
           <>
-            <div className="glass-panel p-2 h-[560px] relative overflow-hidden">
+            <div ref={snapshotRef} className="glass-panel p-2 h-[560px] relative overflow-hidden">
               <PetriDish3D
                 cells={state?.cells || []}
                 antibioticField={state?.antibiotic_field || []}
@@ -61,16 +89,31 @@ export default function Dashboard() {
 
       {experimentId && (
         <>
-          {/* Charts */}
-          <div className="mb-6">
+          <div className="mb-6 rounded-[30px] border border-white/10 bg-navy-deep/75 p-6 shadow-[0_30px_100px_rgba(24,58,91,0.3)]">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="section-eyebrow">Experiment Report</p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">Download your laboratory report</h2>
+              </div>
+              <button
+                onClick={handleDownloadReport}
+                disabled={reportLoading}
+                className="btn-report"
+              >
+                {reportLoading ? "Generating PDF…" : "Download Laboratory Report (PDF)"}
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-6" ref={chartRef}>
             <ChartsPanel />
           </div>
 
-          {/* ML + Timeline */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <MLPanel />
             <Timeline />
           </div>
+
         </>
       )}
     </motion.div>

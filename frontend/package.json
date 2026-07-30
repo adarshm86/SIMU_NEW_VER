@@ -15,7 +15,10 @@
     "framer-motion": "^11.3.19",
     "three": "^0.165.0",
     "recharts": "^2.12.7",
-    "axios": "^1.7.3"
+    "axios": "^1.7.3",
+    "jspdf": "^2.5.1",
+    "html2canvas": "^1.4.1",
+    "qrcode": "^1.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",

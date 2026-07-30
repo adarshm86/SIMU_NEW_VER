@@ -62,11 +62,33 @@ export default function HowToUse() {
 
       {/* Section 1: control specifications */}
       <section className="max-w-6xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-2 gap-14 items-start">
-        <GlassCard hover={false} className="!p-3">
-          <div className="rounded-xl overflow-hidden aspect-video bg-charcoal flex items-center justify-center border border-white/5">
-            <span className="font-data text-xs text-medical-white/30 tracking-widest">
-              [ CONTROL PANEL SCREENSHOT PLACEHOLDER ]
-            </span>
+        <GlassCard hover={false} className="!p-4">
+          <div className="rounded-xl overflow-hidden bg-navy-deep/90 p-5 border border-cyan-400/20 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="text-xs font-data text-cyan-soft uppercase tracking-wider">🔬 Experiment Config</span>
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">Ready</span>
+            </div>
+            <div className="space-y-3 font-data text-xs">
+              <div>
+                <label className="text-medical-white/60 block mb-1">Target Organism</label>
+                <div className="bg-charcoal p-2 rounded border border-white/10 text-gold-400">Escherichia coli (E. coli)</div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-medical-white/60 block mb-1">Mutation Rate</label>
+                  <div className="bg-charcoal p-2 rounded border border-white/10 text-cyan-soft">5.0%</div>
+                </div>
+                <div>
+                  <label className="text-medical-white/60 block mb-1">Antibiotic Conc.</label>
+                  <div className="bg-charcoal p-2 rounded border border-white/10 text-cyan-soft">50.0%</div>
+                </div>
+              </div>
+              <div className="pt-2">
+                <div className="w-full py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold text-center text-xs shadow-lg">
+                  ▶ Start Simulation Experiment
+                </div>
+              </div>
+            </div>
           </div>
         </GlassCard>
 
@@ -119,11 +141,16 @@ export default function HowToUse() {
             concentrating in one area of the colony.
           </p>
         </div>
-        <GlassCard hover={false} className="!p-3 order-1 lg:order-2">
-          <div className="rounded-xl overflow-hidden aspect-video bg-charcoal flex items-center justify-center border border-white/5">
-            <span className="font-data text-xs text-medical-white/30 tracking-widest">
-              [ PETRI DISH SCREENSHOT PLACEHOLDER ]
-            </span>
+        <GlassCard hover={false} className="!p-4 order-1 lg:order-2">
+          <div className="rounded-xl overflow-hidden bg-navy-deep/90 p-5 border border-purple-500/20 shadow-xl flex flex-col items-center justify-center min-h-[260px] relative">
+            <div className="w-40 h-40 rounded-full border-2 border-cyan-400/40 bg-radial from-purple-900/40 via-navy to-charcoal flex items-center justify-center relative shadow-[0_0_30px_rgba(56,189,248,0.25)]">
+              <div className="absolute w-3 h-3 rounded-full bg-cyan-400 top-8 left-10 animate-ping" />
+              <div className="absolute w-2.5 h-2.5 rounded-full bg-gold-400 bottom-10 right-8" />
+              <div className="absolute w-3 h-3 rounded-full bg-red-400 top-12 right-12" />
+              <div className="absolute w-2 h-2 rounded-full bg-cyan-300 bottom-12 left-12" />
+              <div className="text-[10px] font-data text-cyan-soft/80">3D Cellular Grid</div>
+            </div>
+            <div className="mt-4 text-xs font-data text-medical-white/60">Real-time Microbial Colony Surface</div>
           </div>
         </GlassCard>
       </section>

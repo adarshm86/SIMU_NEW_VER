@@ -46,6 +46,14 @@ body {
     @apply px-6 py-3 rounded-full font-body font-semibold text-medical-white border border-gold-500/50 hover:bg-gold-500/10 transition-colors duration-300;
   }
 
+  .btn-report {
+    @apply px-6 py-3 rounded-full font-body font-semibold text-white bg-gradient-to-r from-cyan-400 to-violet-500 shadow-[0_0_30px_rgba(111,216,232,0.25)] transition-all duration-300;
+  }
+
+  .btn-report:hover {
+    box-shadow: 0 0 28px rgba(111,216,232,0.35), 0 0 42px rgba(124,58,237,0.18);
+  }
+
   .section-eyebrow {
     @apply font-data text-xs tracking-[0.35em] uppercase text-cyan-soft/80;
   }
