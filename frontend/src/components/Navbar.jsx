@@ -39,7 +39,7 @@ export default function Navbar() {
         >
          
           <span className="font-bold text-base sm:text-lg tracking-wide uppercase font-[stardom]">
-            Microbial Evolution Simulator
+            M E S
           </span>
         </Link>
 

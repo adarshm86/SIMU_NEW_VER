@@ -151,15 +151,15 @@ export default function Landing() {
             <source src={heroVideo} type="video/mp4" />
         </video>
 
-        <div className="relative z-10 text-center px-6 max-w-5xl flex flex-col items-center">
+        <div className="relative z-10 text-center p-6 max-w-10xl flex flex-col items-center">
           {/* Slogan */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-8 inline-block px-6 py-2 rounded-full border border-earth-300/30 bg-earth-300/5 "
+            className=" inline-block px-6 py-2 rounded-full border border-earth-300/30 bg-earth-300/5 "
           >
-            <p className="text-earth-300 font-bold tracking-[0.25em] uppercase text-xs sm:text-sm">
+            <p className="text-earth-300  font-bold tracking-[0.25em] uppercase text-xs sm:text-sm">
               Decoding Resistance. One Generation at a Time.
             </p>
           </motion.div>
@@ -169,11 +169,11 @@ export default function Landing() {
             initial={{ opacity: 0, y: 20, filter: "blur(4px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.35, duration: 0.8, ease: "easeOut" }}
-            className="font-black text-3xl sm:text-3xl md:text-7xl leading-[1.9] tracking-wide text-white uppercase"
+            className="font-black text-2xl sm:text-2xl md:text-6xl leading-[1.9] tracking-wide text-white/90 uppercase"
           >
             Microbial Evolution
             <br />
-            <span className="text-[#e69b00]">
+            <span className="text-[#fecf33]/70">
               Under Antibiotic Stress
             </span>
           </motion.h1>
@@ -182,7 +182,7 @@ export default function Landing() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            className="mt-8 text-white/70 text-base md:text-lg max-w-2xl mx-auto font-medium leading-relaxed"
+            className="mt-8 text-white/80 text-base md:text-lg max-w-2xl mx-auto font-medium leading-relaxed"
           >
             A computational platform for simulating bacterial reproduction,
             mutation, and selection pressure modeling how antibiotic
