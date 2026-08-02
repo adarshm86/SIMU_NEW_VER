@@ -1,13 +1,5 @@
 """
 Microbial Evolution Simulation Engine.
-
-Models a population of bacteria on a 2D grid ("petri dish") subjected to an
-antibiotic diffusion field. Each generation: cells reproduce, mutate,
-diffuse the antibiotic, and apply selection pressure based on each cell's
-resistance versus local antibiotic concentration.
-
-This module has NO knowledge of machine learning — it only produces data.
-The ML layer (ml/predictor.py) consumes the history this engine emits.
 """
 import uuid
 import random
@@ -19,26 +11,29 @@ SPECIES_PROFILES = {
     "pseudomonas": {"label": "Pseudomonas", "base_growth": 0.27, "base_mutation": 0.015},
 }
 
-# Resistance thresholds used to classify each cell for the frontend renderer
-SUSCEPTIBLE, INTERMEDIATE, RESISTANT = 0, 1, 2
+# Adjusted thresholds for a highly visual, 4-stage color progression
+SUSCEPTIBLE, INTERMEDIATE, RESISTANT, HIGHLY_RESISTANT = 0, 1, 2, 3
 
 
 def classify(resistance):
-    if resistance < 0.34:
+    if resistance < 0.25:
         return SUSCEPTIBLE
-    if resistance < 0.7:
+    if resistance < 0.50:
         return INTERMEDIATE
-    return RESISTANT
+    if resistance < 0.75:
+        return RESISTANT
+    return HIGHLY_RESISTANT
 
 
 class Cell:
-    __slots__ = ("x", "y", "resistance", "alive")
+    __slots__ = ("x", "y", "resistance", "alive", "mutations")
 
-    def __init__(self, x, y, resistance):
+    def __init__(self, x, y, resistance, mutations=0):
         self.x = x
         self.y = y
         self.resistance = resistance
         self.alive = True
+        self.mutations = mutations  # Now properly tracks genomic changes
 
 
 class SimulationEngine:
@@ -59,7 +54,10 @@ class SimulationEngine:
 
         self.grid_size = int(grid_size)
         self.mutation_rate = float(mutation_rate)
-        self.mutation_strength = float(mutation_strength)
+        
+        # DEMO BOOST: Artificially accelerate strength so evolution is visible quickly
+        self.mutation_strength = float(mutation_strength) * 4.0 
+        
         self.antibiotic_level = float(antibiotic_level)
         self.growth_rate = float(growth_rate) if growth_rate else profile["base_growth"]
         self.simulation_speed = float(simulation_speed)
@@ -69,20 +67,21 @@ class SimulationEngine:
         self.death_count = 0
         self.history = []
 
-        # Antibiotic concentration field: higher in the center by default,
-        # diffusing outward each generation
         self.antibiotic_field = self._init_antibiotic_field()
-
         self.cells = []
-        for _ in range(int(initial_population)):
+        self.max_population = max(int(initial_population) * 12, 800)
+        
+        # Enforce 1 cell = 1 grid space on initialization
+        occupied = set()
+        while len(self.cells) < int(initial_population) and len(occupied) < self.grid_size**2:
             x = random.randint(0, self.grid_size - 1)
             y = random.randint(0, self.grid_size - 1)
-            self.cells.append(Cell(x, y, random.uniform(0.0, 0.15)))
+            if (x, y) not in occupied:
+                occupied.add((x, y))
+                self.cells.append(Cell(x, y, random.uniform(0.0, 0.10)))
 
         self.running = False
-        self.max_population = max(int(initial_population) * 12, 800)
 
-    # ------------------------------------------------------------------
     def _init_antibiotic_field(self):
         size = self.grid_size
         yy, xx = np.mgrid[0:size, 0:size]
@@ -92,23 +91,24 @@ class SimulationEngine:
         return field
 
     def _diffuse_antibiotic(self):
-        # Simple diffusion + slight decay so the field evolves visually
         kernel_sum = (
             np.roll(self.antibiotic_field, 1, axis=0)
             + np.roll(self.antibiotic_field, -1, axis=0)
             + np.roll(self.antibiotic_field, 1, axis=1)
             + np.roll(self.antibiotic_field, -1, axis=1)
         )
-        self.antibiotic_field = 0.6 * self.antibiotic_field + 0.1 * kernel_sum
-        self.antibiotic_field = np.clip(self.antibiotic_field * 0.995, 0, 1)
+        self.antibiotic_field = 0.5 * self.antibiotic_field + 0.125 * kernel_sum
+        
+        # DEMO BOOST: Do not let the antibiotic decay to zero. 
+        # A lethal baseline forces the susceptible cells to die, making room for red superbugs.
+        self.antibiotic_field = np.clip(self.antibiotic_field, 0.45, 1.0)
 
-    # ------------------------------------------------------------------
     def step(self):
-        """Advance the simulation by one generation. Returns a state snapshot."""
         self.generation += 1
         self._diffuse_antibiotic()
 
-        new_cells = []
+        survivors = []
+        occupied = set()
         deaths_this_gen = 0
         mutations_this_gen = 0
 
@@ -117,6 +117,7 @@ class SimulationEngine:
                 continue
 
             local_ab = float(self.antibiotic_field[cell.y, cell.x])
+            # Higher pressure = lower survival chance for green/yellow cells
             survival_chance = 1.0 - max(0.0, local_ab - cell.resistance)
 
             if random.random() > survival_chance:
@@ -124,19 +125,41 @@ class SimulationEngine:
                 deaths_this_gen += 1
                 continue
 
+            if (cell.x, cell.y) not in occupied:
+                occupied.add((cell.x, cell.y))
+                survivors.append(cell)
+            else:
+                deaths_this_gen += 1
+
+        new_cells = []
+        
+        for cell in survivors:
             new_cells.append(cell)
-
-            # Reproduction
+            
             if random.random() < self.growth_rate and len(new_cells) < self.max_population:
-                child_resistance = cell.resistance
-                if random.random() < self.mutation_rate:
-                    delta = random.uniform(-1, 1) * self.mutation_strength
-                    child_resistance = float(np.clip(cell.resistance + delta, 0, 1))
-                    mutations_this_gen += 1
-
-                nx = int(np.clip(cell.x + random.randint(-1, 1), 0, self.grid_size - 1))
-                ny = int(np.clip(cell.y + random.randint(-1, 1), 0, self.grid_size - 1))
-                new_cells.append(Cell(nx, ny, child_resistance))
+                neighbors = [
+                    (cell.x + dx, cell.y + dy)
+                    for dx in (-1, 0, 1) for dy in (-1, 0, 1)
+                    if not (dx == 0 and dy == 0)
+                ]
+                random.shuffle(neighbors)
+                
+                for nx, ny in neighbors:
+                    if 0 <= nx < self.grid_size and 0 <= ny < self.grid_size:
+                        if (nx, ny) not in occupied:
+                            child_resistance = cell.resistance
+                            child_mutations = cell.mutations
+                            
+                            # DEMO BOOST: 3x more likely to mutate, and strictly positive resistance gain
+                            if random.random() < (self.mutation_rate * 3.0):
+                                delta = random.uniform(0.1, 0.8) * self.mutation_strength
+                                child_resistance = float(np.clip(cell.resistance + delta, 0, 1))
+                                child_mutations += 1
+                                mutations_this_gen += 1
+                            
+                            occupied.add((nx, ny))
+                            new_cells.append(Cell(nx, ny, child_resistance, child_mutations))
+                            break
 
         self.cells = new_cells
         self.death_count += deaths_this_gen
@@ -146,13 +169,12 @@ class SimulationEngine:
         self.history.append(snapshot)
         return snapshot
 
-    # ------------------------------------------------------------------
     def _build_snapshot(self, deaths_this_gen, mutations_this_gen):
         population = len(self.cells)
         if population > 0:
             resistances = np.array([c.resistance for c in self.cells])
             avg_resistance = float(resistances.mean())
-            resistant_frac = float((resistances >= 0.7).mean())
+            resistant_frac = float((resistances >= 0.75).mean())
         else:
             avg_resistance = 0.0
             resistant_frac = 0.0
@@ -161,8 +183,6 @@ class SimulationEngine:
             deaths_this_gen / max(1, deaths_this_gen + population)
         )
 
-        # Identify hotspots: grid cells where local antibiotic concentration
-        # is high AND resistant cells are clustering there
         hotspot_count = self._count_hotspots()
 
         return {
@@ -183,14 +203,12 @@ class SimulationEngine:
         threshold = 0.6
         grid = np.zeros((self.grid_size, self.grid_size))
         for c in self.cells:
-            if c.resistance >= 0.7:
+            if c.resistance >= 0.75:
                 grid[c.y, c.x] += 1
         hot = (self.antibiotic_field > threshold) & (grid > 0)
         return int(hot.sum())
 
-    # ------------------------------------------------------------------
     def get_cells_payload(self):
-        """Lightweight cell list for the Three.js renderer."""
         return [
             {
                 "id": idx + 1,
@@ -200,7 +218,7 @@ class SimulationEngine:
                 "cls": classify(c.resistance),
                 "alive": True,
                 "generation_born": self.generation,
-                "mutation_count": 0,
+                "mutation_count": c.mutations, # Now dynamically passed to frontend
                 "growth_rate": round(self.growth_rate, 3),
                 "parent_id": None,
             }
