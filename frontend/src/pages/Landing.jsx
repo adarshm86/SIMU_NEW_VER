@@ -129,6 +129,19 @@ const EvolutionPathArrow = ({ type, active, past }) => {
 export default function Landing() {
   const carouselIndex = useAutoCarousel(LAB_IMAGES.length);
   const activeStage = useAutoStage(EVOLUTION_STAGES.length);
+  const [guideCompleted, setGuideCompleted] = useState(false);
+
+  useEffect(() => {
+    const syncGuideState = () => {
+      const completed = typeof window !== "undefined" && window.localStorage.getItem("mes-guide-completed") === "true";
+      setGuideCompleted(completed);
+    };
+
+    syncGuideState();
+    window.addEventListener("mes-guide-completed", syncGuideState);
+
+    return () => window.removeEventListener("mes-guide-completed", syncGuideState);
+  }, []);
 
   return (
     <motion.div
@@ -199,13 +212,7 @@ export default function Landing() {
               to="/how-to-use" 
               className="px-8 py-3.5 rounded-full border-2 border-earth-300/60 text-earth-300 font-bold uppercase tracking-widest hover:bg-earth-300/10 hover:border-earth-300 transition-all duration-300"
             >
-              Explore Project
-            </Link>
-            <Link 
-              to="/dashboard" 
-              className="px-8 py-3.5 rounded-full bg-[#fecf33] text-[#0c0d0c] font-bold uppercase tracking-widest hover:bg-emerald-400 hover:-translate-y-0.5 transition-all duration-300 shadow-lg shadow-emerald-300/20"
-            >
-              Launch Laboratory
+              User Guide
             </Link>
           </motion.div>
         </div>

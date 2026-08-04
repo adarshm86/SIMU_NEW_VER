@@ -45,6 +45,10 @@ const ALL_ANTIBIOTICS = Array.from(
 
 const SELECT_CLASS = "lab-select";
 
+function isGuideCompleted() {
+  return typeof window !== "undefined" && window.localStorage.getItem("mes-guide-completed") === "true";
+}
+
 function getAntibioticOptions(species) {
   return ANTIBIOTICS_BY_SPECIES[species] || ALL_ANTIBIOTICS;
 }
@@ -69,10 +73,20 @@ export default function ControlPanel() {
   } = useSimulation();
 
   const [showParameters, setShowParameters] = useState(false);
+  const [guideCompleted, setGuideCompleted] = useState(false);
   const disabled = !!experimentId;
   const antibioticOptions = getAntibioticOptions(config.species);
-  const readyForParameters = isReadyForSimulation(config);
+  const readyForParameters = guideCompleted && isReadyForSimulation(config);
   const readyToStart = readyForParameters && showParameters;
+
+  useEffect(() => {
+    const syncGuideState = () => setGuideCompleted(isGuideCompleted());
+
+    syncGuideState();
+    window.addEventListener("mes-guide-completed", syncGuideState);
+
+    return () => window.removeEventListener("mes-guide-completed", syncGuideState);
+  }, []);
 
   useEffect(() => {
     if (!readyForParameters) {
@@ -100,7 +114,7 @@ export default function ControlPanel() {
         </label>
         <select
           value={config.species || ""}
-          disabled={disabled}
+          disabled={disabled || !guideCompleted}
           onChange={handleSpeciesChange}
           className={SELECT_CLASS}
         >
@@ -122,7 +136,7 @@ export default function ControlPanel() {
         </label>
         <select
           value={config.antibiotic || ""}
-          disabled={disabled || !config.species}
+          disabled={disabled || !guideCompleted || !config.species}
           onChange={(e) => updateConfig({ antibiotic: e.target.value })}
           className={SELECT_CLASS}
         >
@@ -136,7 +150,13 @@ export default function ControlPanel() {
           ))}
         </select>
 
-        {!readyForParameters && !experimentId && (
+        {!guideCompleted && !experimentId && (
+          <p className="mt-3 text-xs font-data text-medical-white/45 leading-relaxed">
+            Please complete the user guide first to unlock the laboratory controls.
+          </p>
+        )}
+
+        {guideCompleted && !readyForParameters && !experimentId && (
           <p className="mt-3 text-xs font-data text-medical-white/45 leading-relaxed">
             Please select both a microbial species and an antimicrobial agent to continue.
           </p>

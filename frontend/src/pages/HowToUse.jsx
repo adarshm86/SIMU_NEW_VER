@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import GlassCard from "../components/GlassCard.jsx";
 
 const CONTROLS = [
@@ -41,6 +43,40 @@ const OUTPUTS = [
 ];
 
 export default function HowToUse() {
+  const [guideCompleted, setGuideCompleted] = useState(false);
+  const [guideAcknowledged, setGuideAcknowledged] = useState(false);
+
+  useEffect(() => {
+    const syncGuideState = () => {
+      const completed = typeof window !== "undefined" && window.localStorage.getItem("mes-guide-completed") === "true";
+      setGuideCompleted(completed);
+      setGuideAcknowledged(completed);
+    };
+
+    syncGuideState();
+    window.addEventListener("mes-guide-completed", syncGuideState);
+
+    return () => window.removeEventListener("mes-guide-completed", syncGuideState);
+  }, []);
+
+  const handleGuideAcknowledgement = (event) => {
+    const checked = event.target.checked;
+    setGuideAcknowledged(checked);
+
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    if (checked) {
+      window.localStorage.setItem("mes-guide-completed", "true");
+    } else {
+      window.localStorage.removeItem("mes-guide-completed");
+    }
+
+    setGuideCompleted(checked);
+    window.dispatchEvent(new Event("mes-guide-completed"));
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -174,6 +210,33 @@ export default function HowToUse() {
               </p>
             </GlassCard>
           ))}
+        </div>
+
+        <div className="mt-12 flex flex-col items-center gap-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-6 text-center">
+          <p className="text-sm font-body text-medical-white/75">
+            {guideCompleted
+              ? "The user guide is complete. You can now launch the laboratory."
+              : "Read through the guide and confirm completion to unlock the laboratory."}
+          </p>
+          <label className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-body text-medical-white/75">
+            <input
+              type="checkbox"
+              checked={guideAcknowledged}
+              onChange={handleGuideAcknowledgement}
+              className="h-4 w-4 rounded border-white/20 bg-transparent text-emerald-400 focus:ring-emerald-400"
+            />
+            <span>I have read and understood the user guide</span>
+          </label>
+          <Link
+            to="/dashboard"
+            className={`rounded-full border px-6 py-3 text-sm font-semibold uppercase tracking-widest transition-all duration-300 ${
+              guideCompleted
+                ? "border-emerald-400 text-emerald-300 hover:bg-emerald-500/10"
+                : "border-white/15 text-white/50 cursor-not-allowed pointer-events-none"
+            }`}
+          >
+            Launch Laboratory
+          </Link>
         </div>
       </section>
     </motion.div>

@@ -4,18 +4,31 @@ import { motion } from "framer-motion";
 
 const NAV_LINKS = [
   { label: "Home", to: "/" },
-  { label: "Explore", to: "/how-to-use" },
-  { label: "Laboratory", to: "/dashboard" },
+  { label: "User Guide", to: "/how-to-use" },
+  { label: "Laboratory", to: "/dashboard", requiresGuide: true },
 ];
 
 export default function Navbar() {
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [guideCompleted, setGuideCompleted] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+
+    const syncGuideState = () => {
+      const completed = typeof window !== "undefined" && window.localStorage.getItem("mes-guide-completed") === "true";
+      setGuideCompleted(completed);
+    };
+
+    syncGuideState();
+    window.addEventListener("mes-guide-completed", syncGuideState);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("mes-guide-completed", syncGuideState);
+    };
   }, []);
 
   return (
@@ -47,16 +60,22 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-1 p-1 rounded-full bg-white/5 border border-white/5 shadow-inner">
           {NAV_LINKS.map((link) => {
             const active = location.pathname === link.to;
+            const isLocked = link.requiresGuide && !guideCompleted;
             return (
               <Link
                 key={link.to}
-                to={link.to}
+                to={isLocked ? "#" : link.to}
+                onClick={(event) => {
+                  if (isLocked) {
+                    event.preventDefault();
+                  }
+                }}
                 /* Fully rounded inner pills */
                 className={`relative px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                   active 
                     ? "text-emerald-100 bg-[#74421f'] border border[#FFAB0F] shadow-[0_0_15px_rgba(16,185,129,0.2)]" 
                     : "text-stone-300 hover:text-white hover:bg-white/10 border border-transparent"
-                }`}
+                } ${isLocked ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {link.label}
               </Link>

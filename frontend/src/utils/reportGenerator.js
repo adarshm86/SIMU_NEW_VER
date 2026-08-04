@@ -18,6 +18,15 @@ const ANTIBIOTIC_NAMES = {
   daptomycin: "Daptomycin",
 };
 
+const REPORT_METADATA = {
+  title: "Clinical Microbiology Laboratory Report",
+  subtitle: "Antimicrobial Resistance and Growth Assessment",
+  specimen: "In vitro culture isolate / simulated specimen",
+  service: "Microbiology & Antimicrobial Surveillance",
+  institution: "Sai Vidya Institute of Technology",
+  department: "Department of Information Science & Engineering",
+};
+
 function pad(value) {
   return String(value).padStart(2, "0");
 }
@@ -51,6 +60,20 @@ function safeNum(val, decimals = 0) {
 function sanitizeFilename(val) {
   return String(val || "Unknown").replace(/[^a-zA-Z0-9_\-]/g, "_");
 }
+
+const REPORT_THEME = {
+  page: "#ffffff",
+  surface: "#f8fafc",
+  surfaceAlt: "#eef2f7",
+  border: "rgba(15, 23, 42, 0.12)",
+  borderStrong: "rgba(15, 23, 42, 0.18)",
+  text: "#0f172a",
+  textMuted: "#475569",
+  textSoft: "#64748b",
+  accent: "#334155",
+  accentSoft: "rgba(15, 23, 42, 0.05)",
+  shadow: "0 18px 45px rgba(15, 23, 42, 0.08)",
+};
 
 function getSpeciesLabel(key) {
   return SPECIES_NAMES[key] || key || "Escherichia coli (E. coli)";
@@ -88,11 +111,11 @@ function generateSVGChart({ title, dataPoints, color, strokeColor, unit = "", he
   const lastPoint = dataPoints[dataPoints.length - 1];
 
   return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="background: rgba(15, 23, 42, 0.6); border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.25);">
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" style="background: #ffffff; border-radius: 12px; border: 1px solid ${REPORT_THEME.border}; box-shadow: ${REPORT_THEME.shadow};">
       <!-- Gridlines -->
-      <line x1="${padding.left}" y1="${padding.top}" x2="${width - padding.right}" y2="${padding.top}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
-      <line x1="${padding.left}" y1="${padding.top + chartH / 2}" x2="${width - padding.right}" y2="${padding.top + chartH / 2}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="3,3" />
-      <line x1="${padding.left}" y1="${padding.top + chartH}" x2="${width - padding.right}" y2="${padding.top + chartH}" stroke="rgba(255,255,255,0.12)" />
+      <line x1="${padding.left}" y1="${padding.top}" x2="${width - padding.right}" y2="${padding.top}" stroke="rgba(15,23,42,0.06)" stroke-dasharray="3,3" />
+      <line x1="${padding.left}" y1="${padding.top + chartH / 2}" x2="${width - padding.right}" y2="${padding.top + chartH / 2}" stroke="rgba(15,23,42,0.06)" stroke-dasharray="3,3" />
+      <line x1="${padding.left}" y1="${padding.top + chartH}" x2="${width - padding.right}" y2="${padding.top + chartH}" stroke="rgba(15,23,42,0.12)" />
 
       <!-- Area Fill -->
       <defs>
@@ -110,12 +133,12 @@ function generateSVGChart({ title, dataPoints, color, strokeColor, unit = "", he
       <circle cx="${getX(lastPoint.x)}" cy="${getY(lastPoint.y)}" r="4.5" fill="${strokeColor}" stroke="#ffffff" stroke-width="1.5" />
 
       <!-- Title & Value Badge -->
-      <text x="${padding.left}" y="17" fill="#e2e8f0" font-size="11" font-weight="600" font-family="sans-serif">${title}</text>
-      <text x="${width - padding.right}" y="17" fill="${strokeColor}" font-size="11" font-weight="700" font-family="sans-serif" text-anchor="end">${safeNum(lastPoint.y, 1)}${unit}</text>
+      <text x="${padding.left}" y="17" fill="${REPORT_THEME.text}" font-size="11" font-weight="700" font-family="sans-serif">${title}</text>
+      <text x="${width - padding.right}" y="17" fill="${REPORT_THEME.accent}" font-size="11" font-weight="700" font-family="sans-serif" text-anchor="end">${safeNum(lastPoint.y, 1)}${unit}</text>
 
       <!-- Axis Labels -->
-      <text x="${padding.left}" y="${height - 6}" fill="#64748b" font-size="9" font-family="sans-serif">Gen 0</text>
-      <text x="${width - padding.right}" y="${height - 6}" fill="#64748b" font-size="9" font-family="sans-serif" text-anchor="end">Gen ${maxX}</text>
+      <text x="${padding.left}" y="${height - 6}" fill="${REPORT_THEME.textSoft}" font-size="9" font-family="sans-serif">Gen 0</text>
+      <text x="${width - padding.right}" y="${height - 6}" fill="${REPORT_THEME.textSoft}" font-size="9" font-family="sans-serif" text-anchor="end">Gen ${maxX}</text>
     </svg>
   `;
 }
@@ -128,16 +151,16 @@ function generateCircularGaugeSVG({ label, value, strokeColor, size = 110 }) {
   const offset = circumference - (Math.min(100, Math.max(0, value)) / 100) * circumference;
 
   return `
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 16px; padding: 14px; width: 140px;">
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 16px; padding: 14px; width: 140px; box-shadow: ${REPORT_THEME.shadow};">
       <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-        <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="${strokeWidth}" />
+        <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="none" stroke="rgba(15,23,42,0.08)" stroke-width="${strokeWidth}" />
         <circle cx="${size / 2}" cy="${size / 2}" r="${radius}" fill="none" stroke="${strokeColor}" stroke-width="${strokeWidth}"
                 stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"
                 transform="rotate(-90 ${size / 2} ${size / 2})" />
-        <text x="50%" y="46%" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="18" font-weight="800" font-family="sans-serif">${safeNum(value, 0)}%</text>
-        <text x="50%" y="64%" text-anchor="middle" dominant-baseline="middle" fill="#94a3b8" font-size="9" font-weight="600" font-family="sans-serif">INDEX</text>
+        <text x="50%" y="46%" text-anchor="middle" dominant-baseline="middle" fill="${REPORT_THEME.text}" font-size="18" font-weight="800" font-family="sans-serif">${safeNum(value, 0)}%</text>
+        <text x="50%" y="64%" text-anchor="middle" dominant-baseline="middle" fill="${REPORT_THEME.textSoft}" font-size="9" font-weight="600" font-family="sans-serif">INDEX</text>
       </svg>
-      <div style="margin-top: 8px; font-size: 11px; font-weight: 700; color: #e2e8f0; text-align: center; text-transform: uppercase; letter-spacing: 0.05em;">${label}</div>
+      <div style="margin-top: 8px; font-size: 11px; font-weight: 700; color: ${REPORT_THEME.text}; text-align: center; text-transform: uppercase; letter-spacing: 0.05em;">${label}</div>
     </div>
   `;
 }
@@ -173,7 +196,7 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
       }
       // 2. Fallback to html2canvas if direct capture wasn't possible
       if (!snapshotImgData || snapshotImgData.length < 500) {
-        const snapCanvas = await html2canvas(snapshotElement, { backgroundColor: "#070d19", scale: 2, useCORS: true });
+        const snapCanvas = await html2canvas(snapshotElement, { backgroundColor: "#ffffff", scale: 2, useCORS: true });
         snapshotImgData = snapCanvas.toDataURL("image/png");
       }
     } catch (e) {
@@ -209,41 +232,41 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
   container.style.left = "-9999px";
   container.style.top = "0";
   container.style.width = "800px";
-  container.style.background = "#070d19";
-  container.style.color = "#f8fafc";
+  container.style.background = REPORT_THEME.page;
+  container.style.color = REPORT_THEME.text;
   container.style.fontFamily = "'Inter', system-ui, -apple-system, sans-serif";
 
   // Common Header HTML
   const getPageHeaderHTML = (pageNum) => `
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 10px; margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid ${REPORT_THEME.border}; padding-bottom: 10px; margin-bottom: 20px;">
       <div style="display: flex; align-items: center; gap: 10px;">
-        <span style="font-size: 20px;">🧬</span>
+        <span style="font-size: 20px;">�</span>
         <div>
-          <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.1em; color: #38bdf8; text-transform: uppercase;">MICROBIAL EVOLUTION SIMULATOR</div>
-          <div style="font-size: 10px; color: #94a3b8;">Sai Vidya Institute of Technology — Dept. of ISE</div>
+          <div style="font-size: 13px; font-weight: 800; letter-spacing: 0.1em; color: ${REPORT_THEME.accent}; text-transform: uppercase;">${REPORT_METADATA.title.toUpperCase()}</div>
+          <div style="font-size: 10px; color: ${REPORT_THEME.textSoft};">${REPORT_METADATA.institution} — ${REPORT_METADATA.department}</div>
         </div>
       </div>
       <div style="text-align: right;">
-        <div style="font-size: 10px; font-weight: 700; color: #c084fc; font-family: monospace;">${reportId}</div>
-        <div style="font-size: 9px; color: #64748b;">TIMESTAMP: ${reportDate} ${reportTime}</div>
+        <div style="font-size: 10px; font-weight: 700; color: ${REPORT_THEME.accent}; font-family: monospace;">${reportId}</div>
+        <div style="font-size: 9px; color: ${REPORT_THEME.textSoft};">TIMESTAMP: ${reportDate} ${reportTime}</div>
       </div>
     </div>
   `;
 
   // Common Footer HTML
   const getPageFooterHTML = (pageNum) => `
-    <div style="margin-top: auto; border-top: 1px solid rgba(56, 189, 248, 0.2); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #64748b;">
+    <div style="margin-top: auto; border-top: 1px solid ${REPORT_THEME.border}; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: ${REPORT_THEME.textSoft};">
       <div>Microbial Evolution Simulator | Sai Vidya Institute of Technology | Dept. of Information Science & Engineering</div>
-      <div style="font-weight: 700; color: #38bdf8;">Report ID: ${reportId} | v1.0 | Page ${pageNum} of 8</div>
+      <div style="font-weight: 700; color: ${REPORT_THEME.accent};">Report ID: ${reportId} | v1.0 | Page ${pageNum} of 8</div>
     </div>
   `;
 
   // Faint DNA Background Watermark
-  const bgWatermarkStyle = `background-color: #070d19; background-image: radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(192, 132, 252, 0.08) 0%, transparent 40%), url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" opacity="0.035"%3E%3Cpath d="M20 0 Q60 60 100 0 M20 60 Q60 0 100 60" stroke="%2338bdf8" stroke-width="2" fill="none"/%3E%3Ccircle cx="60" cy="30" r="3" fill="%23c084fc"/%3E%3C/svg%3E');`;
+  const bgWatermarkStyle = `background-color: #ffffff; background-image: radial-gradient(circle at 15% 15%, rgba(15, 23, 42, 0.04) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(15, 23, 42, 0.03) 0%, transparent 40%), url('data:image/svg+xml;utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" opacity="0.03"%3E%3Cpath d="M20 0 Q60 60 100 0 M20 60 Q60 0 100 60" stroke="%23334155" stroke-width="2" fill="none"/%3E%3Ccircle cx="60" cy="30" r="3" fill="%2364748b"/%3E%3C/svg%3E');`;
 
   container.innerHTML = `
     <!-- PAGE 1: COVER -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; position: relative; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; position: relative; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(1)}
       
       <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative;">
@@ -332,43 +355,42 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
         </div>
 
         <div style="max-width: 440px; z-index: 2;">
-          <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #38bdf8; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px;">
-            <span>🧬</span> BIOTECHNOLOGY EXPERIMENTAL REPORT
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: ${REPORT_THEME.accentSoft}; border: 1px solid ${REPORT_THEME.border}; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; color: ${REPORT_THEME.accent}; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px;">
+            <span>�</span> ${REPORT_METADATA.title.toUpperCase()}
           </div>
 
-          <h1 style="font-size: 32px; font-weight: 900; line-height: 1.25; color: #ffffff; margin: 0 0 10px 0; font-family: 'Inter', sans-serif;">
-            Microbial Evolution <span style="color: #38bdf8;">Simulator</span>
+          <h1 style="font-size: 30px; font-weight: 900; line-height: 1.2; color: ${REPORT_THEME.text}; margin: 0 0 8px 0; font-family: 'Georgia', 'Times New Roman', serif;">
+            ${REPORT_METADATA.subtitle}
           </h1>
 
-          <div style="font-size: 16px; font-weight: 600; color: #cbd5e1; margin-bottom: 26px; letter-spacing: 0.02em;">
-            Laboratory Experiment & Analysis Report
+          <div style="font-size: 14px; font-weight: 600; color: ${REPORT_THEME.textMuted}; margin-bottom: 22px; letter-spacing: 0.02em;">
+            Formal laboratory assessment prepared for clinical review.
           </div>
 
-          <!-- Glass Style Banner -->
-          <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 20px; padding: 24px; box-shadow: ${REPORT_THEME.shadow}; display: flex; flex-direction: column; gap: 14px;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px;">
               <div>
-                <span style="color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Date</span>
-                <span style="color: #f8fafc; font-weight: 700;">${reportDate}</span>
+                <span style="color: ${REPORT_THEME.textSoft}; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Date</span>
+                <span style="color: ${REPORT_THEME.text}; font-weight: 700;">${reportDate}</span>
               </div>
               <div>
-                <span style="color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Time</span>
-                <span style="color: #f8fafc; font-weight: 700;">${reportTime}</span>
+                <span style="color: ${REPORT_THEME.textSoft}; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Time</span>
+                <span style="color: ${REPORT_THEME.text}; font-weight: 700;">${reportTime}</span>
               </div>
               <div>
-                <span style="color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Experiment ID</span>
-                <span style="color: #c084fc; font-weight: 800; font-family: monospace;">${reportId}</span>
+                <span style="color: ${REPORT_THEME.textSoft}; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Report ID</span>
+                <span style="color: ${REPORT_THEME.accent}; font-weight: 800; font-family: monospace;">${reportId}</span>
               </div>
               <div>
-                <span style="color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Version</span>
-                <span style="color: #38bdf8; font-weight: 700;">v1.0 (Research Ed.)</span>
+                <span style="color: ${REPORT_THEME.textSoft}; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 2px;">Service</span>
+                <span style="color: ${REPORT_THEME.accent}; font-weight: 700;">${REPORT_METADATA.service}</span>
               </div>
             </div>
 
-            <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
-              <span style="color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 4px;">Institution & Department</span>
-              <div style="color: #ffffff; font-weight: 700; font-size: 13px;">Sai Vidya Institute of Technology</div>
-              <div style="color: #38bdf8; font-size: 11px; font-weight: 600;">Department of Information Science & Engineering</div>
+            <div style="border-top: 1px solid ${REPORT_THEME.border}; padding-top: 12px;">
+              <span style="color: ${REPORT_THEME.textSoft}; font-weight: 600; text-transform: uppercase; font-size: 10px; display: block; margin-bottom: 4px;">Specimen / Institution</span>
+              <div style="color: ${REPORT_THEME.text}; font-weight: 700; font-size: 13px;">${REPORT_METADATA.specimen}</div>
+              <div style="color: ${REPORT_THEME.accent}; font-size: 11px; font-weight: 600;">${REPORT_METADATA.institution}</div>
             </div>
           </div>
         </div>
@@ -378,14 +400,14 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 2: EXPERIMENT CONFIGURATION -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(2)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-        <span style="font-size: 20px;">⚙️</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 2 — EXPERIMENT CONFIGURATION</h2>
+        <span style="font-size: 20px;">🧾</span>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 2 — SPECIMEN INFORMATION & TEST PARAMETERS</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 25px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 25px;"></div>
 
       <div style="grid-template-columns: 1fr 1fr; display: grid; gap: 16px; margin-bottom: 20px;">
         ${[
@@ -400,20 +422,20 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
           ["Simulation Speed", `${config.simulation_speed ?? 1.0}×`, "⏩", "#f43f5e"],
           ["Generations", `${finalGeneration} Generations`, "⏱️", "#a855f7"],
         ].map(([label, val, icon, borderCol]) => `
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-left: 4px solid ${borderCol}; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-left: 4px solid ${borderCol}; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
             <div>
-              <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${label}</div>
-              <div style="font-size: 15px; font-weight: 800; color: #ffffff;">${val}</div>
+              <div style="font-size: 10px; font-weight: 700; color: ${REPORT_THEME.textSoft}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${label}</div>
+              <div style="font-size: 15px; font-weight: 800; color: ${REPORT_THEME.text};">${val}</div>
             </div>
             <span style="font-size: 24px; opacity: 0.9;">${icon}</span>
           </div>
         `).join("")}
       </div>
 
-      <div style="background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(192, 132, 252, 0.3); border-radius: 16px; padding: 18px; margin-top: auto; margin-bottom: 20px;">
-        <div style="font-size: 12px; font-weight: 700; color: #c084fc; margin-bottom: 6px;">📌 EXPERIMENTAL SPECIFICATION NOTE</div>
-        <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5;">
-          The biological parameters listed above define the baseline stochastic state matrix. Population kinetics are calculated using cellular automaton diffusion rules under variable antibiotic inhibition fields.
+      <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 16px; padding: 18px; margin-top: auto; margin-bottom: 20px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
+        <div style="font-size: 12px; font-weight: 700; color: ${REPORT_THEME.accent}; margin-bottom: 6px;">📌 CLINICAL SUMMARY</div>
+        <div style="font-size: 11px; color: ${REPORT_THEME.textMuted}; line-height: 1.5;">
+          Specimen type: ${REPORT_METADATA.specimen}. Assessment performed under controlled antimicrobial exposure conditions to evaluate growth kinetics, mutation dynamics, and resistance emergence. Findings are intended for laboratory interpretation and should be correlated with clinical context.
         </div>
       </div>
 
@@ -421,14 +443,14 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 3: LIVE RESULTS -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(3)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
         <span style="font-size: 20px;">📊</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 3 — LIVE RESULTS & SIMULATION METRICS</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 3 — LIVE RESULTS & SIMULATION METRICS</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 25px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 25px;"></div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         ${[
@@ -439,13 +461,13 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
           ["Survival Rate", `${survivalRate}%`, "💚", "#2dd4bf", "Percentage of colony surviving drug exposure"],
           ["Death Rate", `${deathRate}%`, "💀", "#f43f5e", "Mortality percentage per generation cycle"],
         ].map(([title, val, icon, color, desc]) => `
-          <div style="background: rgba(15, 23, 42, 0.7); border: 2px solid ${color}; border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+          <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-left: 4px solid ${color}; border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">${title}</span>
+              <span style="font-size: 11px; font-weight: 800; color: ${REPORT_THEME.textSoft}; text-transform: uppercase; letter-spacing: 0.08em;">${title}</span>
               <span style="font-size: 26px;">${icon}</span>
             </div>
-            <div style="font-size: 32px; font-weight: 900; color: ${color}; font-family: sans-serif;">${val}</div>
-            <div style="font-size: 11px; color: #cbd5e1; line-height: 1.4; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">${desc}</div>
+            <div style="font-size: 32px; font-weight: 900; color: ${REPORT_THEME.text}; font-family: sans-serif;">${val}</div>
+            <div style="font-size: 11px; color: ${REPORT_THEME.textMuted}; line-height: 1.4; border-top: 1px solid ${REPORT_THEME.border}; padding-top: 8px;">${desc}</div>
           </div>
         `).join("")}
       </div>
@@ -454,14 +476,14 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 4: SCIENTIFIC CHARTS -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(4)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
         <span style="font-size: 20px;">📈</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 4 — SCIENTIFIC CHARTS & TRENDS</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 4 — SCIENTIFIC CHARTS & TRENDS</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 20px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 20px;"></div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
         ${generateSVGChart({ title: "Population vs Generation", dataPoints: chartDataPop, color: "pop", strokeColor: "#38bdf8", width: 345, height: 150 })}
@@ -478,27 +500,27 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 5: FINAL SIMULATION -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(5)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
         <span style="font-size: 20px;">🔬</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 5 — FINAL SIMULATION COLONY SNAPSHOT</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 5 — FINAL SIMULATION COLONY SNAPSHOT</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 20px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 20px;"></div>
 
       <!-- Snapshot Container -->
-      <div style="background: rgba(15, 23, 42, 0.8); border: 2px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 16px; text-align: center; margin-bottom: 25px; min-height: 380px; display: flex; align-items: center; justify-content: center;">
+      <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 20px; padding: 16px; text-align: center; margin-bottom: 25px; min-height: 380px; display: flex; align-items: center; justify-content: center; box-shadow: ${REPORT_THEME.shadow};">
         ${
           snapshotImgData
             ? `<img src="${snapshotImgData}" style="max-width: 100%; max-height: 420px; border-radius: 12px; object-fit: contain;" />`
-            : `<div style="padding: 60px; color: #94a3b8; font-size: 13px;">Petri Dish Rendering Canvas Snapshot</div>`
+            : `<div style="padding: 60px; color: ${REPORT_THEME.textSoft}; font-size: 13px;">Petri Dish Rendering Canvas Snapshot</div>`
         }
       </div>
 
       <!-- Colour Legend -->
-      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 18px; padding: 20px;">
-        <div style="font-size: 12px; font-weight: 800; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px;">Colony Phenotype & Field Legend</div>
+      <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 18px; padding: 20px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
+        <div style="font-size: 12px; font-weight: 800; color: ${REPORT_THEME.accent}; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px;">Colony Phenotype & Field Legend</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
           ${[
             ["#3b82f6", "Blue", "Susceptible (Wild-type sensitive)"],
@@ -511,7 +533,7 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
             <div style="display: flex; align-items: center; gap: 10px; font-size: 11px;">
               <span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: ${col}; box-shadow: 0 0 8px ${col}; flex-shrink: 0;"></span>
               <div>
-                <strong style="color: #ffffff;">${label}</strong> — <span style="color: #cbd5e1;">${desc}</span>
+                <strong style="color: ${REPORT_THEME.text};">${label}</strong> — <span style="color: ${REPORT_THEME.textMuted};">${desc}</span>
               </div>
             </div>
           `).join("")}
@@ -522,26 +544,26 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 6: BIOLOGICAL ANALYSIS -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(6)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
         <span style="font-size: 20px;">🧬</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 6 — BIOLOGICAL ANALYSIS</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 6 — LABORATORY ANALYSIS</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 20px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 20px;"></div>
 
       <div style="display: flex; flex-direction: column; gap: 14px;">
         ${[
-          ["1. Growth Kinetics", `The bacterial population of ${speciesName} initially experienced exponential expansion across uninhibited regions of the petri dish matrix. Cell division rate (${safeNum(config.growth_rate ?? 0.3, 2)}) governed colony density until nutrient and spatial constraints stabilized growth.`, "#38bdf8"],
-          ["2. Mutation Dynamics", `Spontaneous genomic mutations occurred at a configured rate of ${safeNum((config.mutation_rate ?? 0.05) * 100, 1)}%. Mutation events generated genetic variability, providing the necessary precursor for antibiotic tolerance selection.`, "#c084fc"],
-          ["3. Antibiotic Selection Pressure", `Application of ${antibioticName} established a concentrated antimicrobial diffusion gradient across the grid. Susceptible wild-type cells within high-concentration zones suffered significant mortality, driving localized clearance.`, "#6366f1"],
-          ["4. Colony Expansion", `Surviving resistant variants expanded into vacated niches. Spatial clustering patterns demonstrate localized clonal expansion near boundary zones, establishing resistant focal points.`, "#3b82f6"],
-          ["5. Resistance Evolution", `Over ${finalGeneration} generations, mean resistance shifted to ${avgResistance}%. Selective pressure effectively replaced drug-sensitive strains with resistant lineages, confirming adaptive micro-evolution.`, "#ec4899"],
+          ["1. Growth Kinetics", `The culture demonstrated rapid initial expansion in the absence of sustained inhibitory pressure, with growth behavior consistent with an active proliferative state. The observed division rate (${safeNum(config.growth_rate ?? 0.3, 2)}) supports robust replication under the stated experimental conditions.`, "#38bdf8"],
+          ["2. Mutation Dynamics", `Spontaneous variation was observed at a configured mutation frequency of ${safeNum((config.mutation_rate ?? 0.05) * 100, 1)}%. These events increased phenotypic diversity and contributed to the emergence of tolerant subpopulations.`, "#c084fc"],
+          ["3. Antimicrobial Selection Pressure", `Exposure to ${antibioticName} created a measurable inhibitory gradient across the assay field. Sensitive cells were reduced in the highest-exposure zones, while resistant variants were comparatively preserved.`, "#6366f1"],
+          ["4. Colony Expansion", `Persisting resistant populations expanded into previously cleared regions, indicating selective advantage and localized persistence of tolerant lineages.`, "#3b82f6"],
+          ["5. Resistance Evolution", `Across ${finalGeneration} generations, mean resistance reached ${avgResistance}%, consistent with a clinically concerning trend toward reduced antimicrobial susceptibility.`, "#ec4899"],
         ].map(([title, body, borderCol]) => `
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-left: 4px solid ${borderCol}; border-radius: 14px; padding: 16px;">
+          <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-left: 4px solid ${borderCol}; border-radius: 14px; padding: 16px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
             <div style="font-size: 13px; font-weight: 800; color: ${borderCol}; margin-bottom: 6px;">${title}</div>
-            <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5;">${body}</div>
+            <div style="font-size: 11px; color: ${REPORT_THEME.textMuted}; line-height: 1.5;">${body}</div>
           </div>
         `).join("")}
       </div>
@@ -550,14 +572,14 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 7: OBSERVATIONS -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(7)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
         <span style="font-size: 20px;">📋</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 7 — EXPERIMENTAL OBSERVATIONS</h2>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 7 — EXPERIMENTAL OBSERVATIONS</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 20px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 20px;"></div>
 
       <div style="display: flex; flex-direction: column; gap: 14px;">
         ${[
@@ -567,13 +589,13 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
           ["⚠️ Mutation Increased After Gen 15", "Accelerated genomic drift detected under sustained drug pressure, resulting in elevated variant diversity.", "#fbbf24", "rgba(251, 191, 36, 0.15)"],
           ["⚠️ Resistance Exceeded Threshold", `Average colony resistance reached ${avgResistance}%, crossing the critical safety threshold for superbug emergence.`, "#f43f5e", "rgba(244, 63, 94, 0.15)"],
         ].map(([title, desc, iconCol, bgCol]) => `
-          <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid ${iconCol}; border-radius: 16px; padding: 18px; display: flex; align-items: flex-start; gap: 14px;">
+          <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 16px; padding: 18px; display: flex; align-items: flex-start; gap: 14px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
             <div style="width: 36px; height: 36px; border-radius: 50%; background: ${bgCol}; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 900; color: ${iconCol}; flex-shrink: 0;">
               ${title.startsWith("✔") ? "✔" : "⚠️"}
             </div>
             <div>
-              <div style="font-size: 13px; font-weight: 800; color: #ffffff; margin-bottom: 4px;">${title.substring(2)}</div>
-              <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5;">${desc}</div>
+              <div style="font-size: 13px; font-weight: 800; color: ${REPORT_THEME.text}; margin-bottom: 4px;">${title.substring(2)}</div>
+              <div style="font-size: 11px; color: ${REPORT_THEME.textMuted}; line-height: 1.5;">${desc}</div>
             </div>
           </div>
         `).join("")}
@@ -583,14 +605,14 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
     </div>
 
     <!-- PAGE 8: AI INTERPRETATION -->
-    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; ${bgWatermarkStyle}">
+    <div class="pdf-page" style="width: 800px; height: 1130px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; color: ${REPORT_THEME.text}; ${bgWatermarkStyle}">
       ${getPageHeaderHTML(8)}
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-        <span style="font-size: 20px;">🤖</span>
-        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 0;">PAGE 8 — AI INTERPRETATION & RECOMMENDATIONS</h2>
+        <span style="font-size: 20px;">�</span>
+        <h2 style="font-size: 20px; font-weight: 800; color: ${REPORT_THEME.text}; margin: 0;">PAGE 8 — CLINICAL INTERPRETATION & RECOMMENDATIONS</h2>
       </div>
-      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, #38bdf8, #c084fc, transparent); margin-bottom: 20px;"></div>
+      <div style="height: 2px; width: 100%; background: linear-gradient(90deg, ${REPORT_THEME.accent}, rgba(15,23,42,0.35), transparent); margin-bottom: 20px;"></div>
 
       <!-- Circular Gauges Row -->
       <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 25px;">
@@ -600,7 +622,7 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
       </div>
 
       <!-- Diagnostic Progress Bars -->
-      <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 18px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 14px;">
+      <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 18px; padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
         ${[
           ["Overall Resistance", avgResistance, "#f43f5e", avgResistance > 50 ? "High Risk" : "Moderate Risk"],
           ["Drug Effectiveness", Math.max(10, 100 - avgResistance), "#38bdf8", avgResistance > 50 ? "Low Efficacy" : "Moderate Efficacy"],
@@ -609,10 +631,10 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
         ].map(([label, val, barCol, statusTag]) => `
           <div>
             <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px;">
-              <span style="font-weight: 700; color: #e2e8f0;">${label}</span>
+              <span style="font-weight: 700; color: ${REPORT_THEME.text};">${label}</span>
               <span style="font-weight: 800; color: ${barCol};">${safeNum(val, 1)}% (${statusTag})</span>
             </div>
-            <div style="height: 8px; width: 100%; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+            <div style="height: 8px; width: 100%; background: rgba(15,23,42,0.08); border-radius: 4px; overflow: hidden;">
               <div style="height: 100%; width: ${Math.min(100, Math.max(0, val))}%; background: ${barCol}; border-radius: 4px;"></div>
             </div>
           </div>
@@ -620,13 +642,13 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
       </div>
 
       <!-- AI Recommendations Box -->
-      <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(192, 132, 252, 0.35); border-radius: 18px; padding: 20px;">
-        <div style="font-size: 12px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">💡 AI Diagnostic Recommendations</div>
-        <div style="font-size: 11px; color: #cbd5e1; line-height: 1.6;">
+      <div style="background: #ffffff; border: 1px solid ${REPORT_THEME.border}; border-radius: 18px; padding: 20px; box-shadow: 0 10px 24px rgba(15,23,42,0.05);">
+        <div style="font-size: 12px; font-weight: 800; color: ${REPORT_THEME.accent}; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;">🩺 Clinical Recommendation</div>
+        <div style="font-size: 11px; color: ${REPORT_THEME.textMuted}; line-height: 1.6;">
           ${
             avgResistance > 50
-              ? `High resistance levels (${avgResistance}%) detected in ${speciesName}. Recommend increasing ${antibioticName} dosage by 25% or transitioning to dual-agent antimicrobial combination therapy to prevent superbug strain fixation.`
-              : `Moderate adaptation observed in ${speciesName}. Maintain current dosing regimen while monitoring mutation rate trajectories over extended generation cycles.`
+              ? `Resistance levels of ${avgResistance}% indicate reduced susceptibility in ${speciesName}. Consider escalation to an alternative or combination antimicrobial regimen and repeat susceptibility assessment after treatment adjustment.`
+              : `Moderate adaptive response was observed in ${speciesName}. Continue routine monitoring and reassess antimicrobial effectiveness if clinical symptoms persist or evolve.`
           }
         </div>
       </div>
@@ -650,7 +672,7 @@ export default async function generateLaboratoryReport({ config = {}, state = {}
       const pageEl = pages[i];
       const pageCanvas = await html2canvas(pageEl, {
         scale: 2,
-        backgroundColor: "#070d19",
+        backgroundColor: "#ffffff",
         useCORS: true,
         logging: false,
       });
