@@ -1,5 +1,5 @@
 """
-Microbial Evolution Simulation Engine.
+Microbial Evolution Simulation Engine - Interactive Virtual Lab Edition.
 """
 import uuid
 import random
@@ -11,7 +11,6 @@ SPECIES_PROFILES = {
     "pseudomonas": {"label": "Pseudomonas", "base_growth": 0.27, "base_mutation": 0.015},
 }
 
-# Adjusted thresholds for a highly visual, 4-stage color progression
 SUSCEPTIBLE, INTERMEDIATE, RESISTANT, HIGHLY_RESISTANT = 0, 1, 2, 3
 
 
@@ -33,7 +32,7 @@ class Cell:
         self.y = y
         self.resistance = resistance
         self.alive = True
-        self.mutations = mutations  # Now properly tracks genomic changes
+        self.mutations = mutations
 
 
 class SimulationEngine:
@@ -54,8 +53,6 @@ class SimulationEngine:
 
         self.grid_size = int(grid_size)
         self.mutation_rate = float(mutation_rate)
-        
-        # DEMO BOOST: Artificially accelerate strength so evolution is visible quickly
         self.mutation_strength = float(mutation_strength) * 4.0 
         
         self.antibiotic_level = float(antibiotic_level)
@@ -66,12 +63,12 @@ class SimulationEngine:
         self.mutation_count = 0
         self.death_count = 0
         self.history = []
+        self.interventions_log = [] # Tracks manual lab actions
 
         self.antibiotic_field = self._init_antibiotic_field()
         self.cells = []
         self.max_population = max(int(initial_population) * 12, 800)
         
-        # Enforce 1 cell = 1 grid space on initialization
         occupied = set()
         while len(self.cells) < int(initial_population) and len(occupied) < self.grid_size**2:
             x = random.randint(0, self.grid_size - 1)
@@ -90,6 +87,50 @@ class SimulationEngine:
         field = self.antibiotic_level * np.clip(1.0 - dist * 0.6, 0.1, 1.0)
         return field
 
+    def apply_treatment(self, intensity, center_x=None, center_y=None, drug_name="Custom Treatment"):
+        """
+        LAB FEATURE: Allows the user to drop a targeted antibiotic disk 
+        or change drug concentration anywhere on the grid mid-simulation.
+        """
+        intensity = float(intensity)
+        size = self.grid_size
+        
+        if center_x is None or center_y is None:
+            cx, cy = size / 2, size / 2
+        else:
+            cx, cy = float(center_x), float(center_y)
+
+        yy, xx = np.mgrid[0:size, 0:size]
+        dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / (size / 2)
+        
+        # Create a localized diffusion gradient ring (Kirby-Bauer simulation)
+        new_pocket = intensity * np.clip(1.0 - dist * 0.8, 0.0, 1.0)
+        
+        # Blend with current antibiotic field
+        self.antibiotic_field = np.clip(self.antibiotic_field + new_pocket, 0.0, 1.0)
+        
+        self.interventions_log.append({
+            "generation": self.generation,
+            "action": "apply_treatment",
+            "drug": drug_name,
+            "intensity": intensity,
+            "coordinates": (cx, cy)
+        })
+        return self.get_state()
+
+    def wash_plate(self):
+        """
+        LAB FEATURE: Flush or wash the petri dish to clear out antibiotic pressure 
+        and check non-resistance / recovery levels of surviving cells.
+        """
+        self.antibiotic_field = self.antibiotic_field * 0.2 # Reduce drug concentration significantly
+        self.interventions_log.append({
+            "generation": self.generation,
+            "action": "wash_plate",
+            "description": "Buffer wash applied to reduce local antimicrobial concentration."
+        })
+        return self.get_state()
+
     def _diffuse_antibiotic(self):
         kernel_sum = (
             np.roll(self.antibiotic_field, 1, axis=0)
@@ -98,10 +139,8 @@ class SimulationEngine:
             + np.roll(self.antibiotic_field, -1, axis=1)
         )
         self.antibiotic_field = 0.5 * self.antibiotic_field + 0.125 * kernel_sum
-        
-        # DEMO BOOST: Do not let the antibiotic decay to zero. 
-        # A lethal baseline forces the susceptible cells to die, making room for red superbugs.
-        self.antibiotic_field = np.clip(self.antibiotic_field, 0.45, 1.0)
+        # Allow natural decay if unforced, keeping baseline flexible for lab resets
+        self.antibiotic_field = np.clip(self.antibiotic_field, 0.1, 1.0)
 
     def step(self):
         self.generation += 1
@@ -117,7 +156,6 @@ class SimulationEngine:
                 continue
 
             local_ab = float(self.antibiotic_field[cell.y, cell.x])
-            # Higher pressure = lower survival chance for green/yellow cells
             survival_chance = 1.0 - max(0.0, local_ab - cell.resistance)
 
             if random.random() > survival_chance:
@@ -132,7 +170,6 @@ class SimulationEngine:
                 deaths_this_gen += 1
 
         new_cells = []
-        
         for cell in survivors:
             new_cells.append(cell)
             
@@ -150,7 +187,6 @@ class SimulationEngine:
                             child_resistance = cell.resistance
                             child_mutations = cell.mutations
                             
-                            # DEMO BOOST: 3x more likely to mutate, and strictly positive resistance gain
                             if random.random() < (self.mutation_rate * 3.0):
                                 delta = random.uniform(0.1, 0.8) * self.mutation_strength
                                 child_resistance = float(np.clip(cell.resistance + delta, 0, 1))
@@ -218,7 +254,7 @@ class SimulationEngine:
                 "cls": classify(c.resistance),
                 "alive": True,
                 "generation_born": self.generation,
-                "mutation_count": c.mutations, # Now dynamically passed to frontend
+                "mutation_count": c.mutations,
                 "growth_rate": round(self.growth_rate, 3),
                 "parent_id": None,
             }
@@ -241,6 +277,7 @@ class SimulationEngine:
             "cells": self.get_cells_payload(),
             "antibiotic_field": self.get_antibiotic_field_payload(downsample=2),
             "stats": latest,
+            "interventions_log": self.interventions_log,
         }
 
     def config_metadata(self):

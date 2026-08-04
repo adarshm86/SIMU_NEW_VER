@@ -43,19 +43,10 @@ const ALL_ANTIBIOTICS = Array.from(
   new Map(Object.values(ANTIBIOTICS_BY_SPECIES).flat().map((item) => [item.value, item])).values()
 );
 
-const SELECT_CLASS =
-  "lab-select";
+const SELECT_CLASS = "lab-select";
 
 function getAntibioticOptions(species) {
   return ANTIBIOTICS_BY_SPECIES[species] || ALL_ANTIBIOTICS;
-}
-
-function isAllowedAntibiotic(species, antibiotic) {
-  return getAntibioticOptions(species).some((option) => option.value === antibiotic);
-}
-
-function getDefaultAntibiotic(species) {
-  return getAntibioticOptions(species)[0]?.value || "";
 }
 
 function isReadyForSimulation(config) {
@@ -73,6 +64,8 @@ export default function ControlPanel() {
     isRunning,
     experimentId,
     loading,
+    applyTreatment,
+    washPlate,
   } = useSimulation();
 
   const [showParameters, setShowParameters] = useState(false);
@@ -225,6 +218,26 @@ export default function ControlPanel() {
           <button onClick={reset} className="btn-outline text-sm py-2.5 col-span-2">
             Reset
           </button>
+        </div>
+      )}
+
+      {experimentId && (
+        <div className="flex flex-col gap-2 pt-3 border-t border-white/10">
+          <p className="text-xs font-data text-cyan-soft/80 tracking-wide uppercase font-bold">Lab Interventions</p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => applyTreatment(0.9, null, null, config.antibiotic || "Custom Drug")}
+              className="text-xs font-data py-2 rounded-lg border border-cyan-400/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 transition-colors"
+            >
+              💊 Apply Treatment
+            </button>
+            <button
+              onClick={washPlate}
+              className="text-xs font-data py-2 rounded-lg border border-blue-400/40 bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 transition-colors"
+            >
+              🌊 Wash Plate
+            </button>
+          </div>
         </div>
       )}
 

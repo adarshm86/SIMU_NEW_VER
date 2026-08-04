@@ -116,6 +116,37 @@ def reset_experiment():
     return jsonify({"status": "reset"})
 
 
+@app.route('/api/treat', methods=['POST'])
+def apply_treatment():
+    data = request.get_json(force=True) or {}
+    experiment_id = data.get("experiment_id")
+    
+    engine = _get_engine_or_404(experiment_id)
+    if engine is None:
+        return jsonify({"error": "experiment not found"}), 404
+        
+    intensity = data.get('intensity', 0.8)
+    x = data.get('x', None)
+    y = data.get('y', None)
+    drug = data.get('drug_name', 'Secondary Antibiotic')
+    
+    state = engine.apply_treatment(intensity, x, y, drug)
+    return jsonify(state)
+
+
+@app.route('/api/wash', methods=['POST'])
+def wash_plate():
+    data = request.get_json(force=True) or {}
+    experiment_id = data.get("experiment_id")
+    
+    engine = _get_engine_or_404(experiment_id)
+    if engine is None:
+        return jsonify({"error": "experiment not found"}), 404
+        
+    state = engine.wash_plate()
+    return jsonify(state)
+
+
 @app.route("/api/report", methods=["GET"])
 def get_report():
     experiment_id = request.args.get("experiment_id")

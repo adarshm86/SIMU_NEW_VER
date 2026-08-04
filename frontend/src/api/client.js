@@ -25,4 +25,10 @@ export const resetExperiment = (experimentId) =>
 export const reportUrl = (experimentId, format) =>
   `/api/report?experiment_id=${experimentId}&format=${format}`;
 
+export const treatExperiment = (experimentId, intensity = 0.8, x = null, y = null, drugName = "Secondary Antibiotic") =>
+  api.post("/treat", { experiment_id: experimentId, intensity, x, y, drug_name: drugName }).then((r) => r.data);
+
+export const washExperiment = (experimentId) =>
+  api.post("/wash", { experiment_id: experimentId }).then((r) => r.data);
+
 export default api;

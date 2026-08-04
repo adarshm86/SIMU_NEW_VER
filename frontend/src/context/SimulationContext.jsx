@@ -1,10 +1,13 @@
 import { createContext, useContext, useRef, useState, useCallback } from "react";
+
 import {
   startExperiment,
   stepExperiment,
   getPrediction,
   getHistory,
   resetExperiment,
+  treatExperiment,
+  washExperiment,
 } from "../api/client.js";
 
 const SimulationContext = createContext(null);
@@ -90,21 +93,36 @@ export function SimulationProvider({ children }) {
     setHistory(h);
   }, [experimentId]);
 
+  const applyTreatment = useCallback(async (intensity = 0.8, x = null, y = null, drugName = "Secondary Antibiotic") => {
+  if (!experimentId) return;
+  const newState = await treatExperiment(experimentId, intensity, x, y, drugName);
+  setState(newState);
+}, [experimentId]);
+
+const washPlate = useCallback(async () => {
+  if (!experimentId) return;
+  const newState = await washExperiment(experimentId);
+  setState(newState);
+}, [experimentId]);
+
+  
   const value = {
-    config,
-    updateConfig,
-    experimentId,
-    state,
-    history,
-    prediction,
-    isRunning,
-    loading,
-    start,
-    pause,
-    resume,
-    reset,
-    refreshHistory,
-  };
+  config,
+  updateConfig,
+  experimentId,
+  state,
+  history,
+  prediction,
+  isRunning,
+  loading,
+  start,
+  pause,
+  resume,
+  reset,
+  refreshHistory,
+  applyTreatment,
+  washPlate,
+};
 
   return (
     <SimulationContext.Provider value={value}>{children}</SimulationContext.Provider>
